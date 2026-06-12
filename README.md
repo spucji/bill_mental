@@ -1,6 +1,6 @@
-# 轻记账 🌿
+# 轻记账 · 心灵空间 🌿
 
-极简、私人、多用户的个人记账应用。Go 后端 + 微信小程序前端，支持语音记账、标签/类目/平台管理和数据统计分析。
+极简、私人、多用户的生活记录小程序。Go 后端 + 微信小程序前端，集成轻记账与心灵空间：支持语音记账、标签/类目/平台管理、数据统计分析、情绪对话、心灵周报和白噪音。
 
 > English: [README.en.md](./README.en.md)
 >
@@ -12,6 +12,7 @@
 - **收支记录** — 支持金额、日期、备注、标签、类目、交易平台
 - **语音记账** — 录音 → 本地 sherpa-onnx 语音识别 → LLM 结构化输出
 - **统计分析** — 按类目/平台/标签维度查看饼图，每日收支变化趋势折线图（Canvas 2D 原生绘制）
+- **心灵空间** — 三个主题的情绪/成长对话，支持历史记录、趋势统计、周报和白噪音
 - **密码认证** — 账号 + bcrypt 密码登录，支持修改密码、管理员重置
 - **数据备份** — S3 兼容存储（MinIO/AWS），按星期轮换
 
@@ -20,7 +21,7 @@
 ```
 ┌──────────────────────────────────┐
 │  WeChat 小程序 (frontend/)        │
-│  原生 Canvas 图表 · 录音组件      │
+│  空间选择 · 记账 · 心灵空间       │
 └──────────────┬───────────────────┘
                │ HTTPS
 ┌──────────────▼───────────────────┐
@@ -34,9 +35,9 @@
 └──────────────┬───────────────────┘
                │
 ┌──────────────▼───────────────────┐
-│  语音处理                          │
-│  ffmpeg → sherpa-onnx (SenseVoice)│
-│  → DeepSeek/Doubao LLM           │
+│  AI / 音频能力                     │
+│  语音记账: ffmpeg → SenseVoice    │
+│  心灵对话: DeepSeek/Doubao LLM    │
 └──────────────────────────────────┘
 ```
 
@@ -48,17 +49,18 @@ bill/
 │   ├── main.go              # 入口：服务启动 / CLI 运维工具
 │   ├── config/              # 环境变量配置
 │   ├── database/            # SQLite 初始化、自动迁移
-│   ├── handlers/            # HTTP 处理器（auth/record/tag/category/platform/analysis/voice/admin）
+│   ├── handlers/            # HTTP 处理器（auth/record/tag/category/platform/analysis/voice/mental/admin）
 │   ├── middleware/           # JWT 认证 & Admin 鉴权中间件
 │   ├── models/              # GORM 数据模型
 │   └── services/            # 业务逻辑（统计、语音解析）
 ├── frontend/                # WeChat 小程序
-│   ├── pages/               # 页面（login/records/analysis/mine/record-edit/管理页/change-password）
+│   ├── pages/               # 页面（login/space-select/records/analysis/mental-* 等）
 │   ├── components/          # 组件（date-picker/chart-canvas/voice-bubble）
 │   └── utils/               # 工具（api 封装、认证）
 ├── web/                     # Web 前端（开发中 ⚠️）
 │   └── index.html           # 单文件 SPA（零依赖、零构建）
 ├── scripts/                 # Python 脚本（ASR 识别、模型下载）
+├── assets/sounds/           # 心灵空间白噪音资源
 ├── deploy/                  # 部署配置（systemd、定时备份、环境变量）
 ├── deploy.sh                # 一键部署脚本（Ubuntu 24）
 └── Caddyfile                # Caddy 反向代理配置示例
@@ -76,7 +78,8 @@ cd src && go build -o ../bill .
 cat > .env << EOF
 JWT_SECRET=your-secret-key
 DB_PATH=./bill.db
-SERVER_PORT=8080
+APP_PORT=8080
+AI_API_KEY=sk-your-api-key
 EOF
 
 # 创建管理员账号
@@ -124,6 +127,12 @@ bill backup <本地文件> <S3路径>            # 上传备份到 S3
 | `/api/platforms` | GET/POST | 平台列表 / 新增 |
 | `/api/platforms/:id` | PUT/DELETE | 修改 / 删除平台 |
 | `/api/analysis/summary` | GET | 统计分析数据 |
+| `/api/mental/profile` | GET/POST | 心灵空间昵称资料 |
+| `/api/mental/analyze` | POST | 心灵对话分析 |
+| `/api/mental/history` | GET | 心灵对话历史 |
+| `/api/mental/weekly-report` | GET | 心灵周报 |
+| `/api/mental/statistics` | GET | 心灵趋势统计 |
+| `/api/mental/sounds/:filename` | GET | 白噪音资源 |
 | `/api/admin/users` | GET/POST | 管理员：用户列表 / 创建 |
 | `/api/admin/users/:id` | DELETE | 管理员：删除用户 |
 

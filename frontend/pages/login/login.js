@@ -14,7 +14,7 @@ Page({
     const saved = wx.getStorageSync('baseURL') || ''
     this.setData({ baseURL: saved, showServerInput: !saved })
     if (app.globalData.token && app.globalData.account) {
-      wx.switchTab({ url: '/pages/records/records' })
+      wx.redirectTo({ url: '/pages/space-select/space-select' })
     }
   },
 
@@ -41,12 +41,14 @@ Page({
       wx.setStorageSync('baseURL', url)
       app.globalData.token = data.token
       app.globalData.account = account
+      app.globalData.userId = data.user && data.user.id ? String(data.user.id) : ''
       wx.setStorageSync('token', data.token)
       wx.setStorageSync('account', account)
+      wx.setStorageSync('userId', app.globalData.userId)
       await app.refreshTags()
       app.refreshCategories()
       app.refreshPlatforms()
-      wx.switchTab({ url: '/pages/records/records' })
+      wx.redirectTo({ url: '/pages/space-select/space-select' })
     } catch (e) {
       wx.showModal({ title: '登录失败', content: e.message || '登录失败', showCancel: false })
     }

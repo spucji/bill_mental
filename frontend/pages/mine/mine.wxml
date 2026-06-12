@@ -35,6 +35,13 @@
     </view>
   </view>
 
+  <view class="card menu-card" bindtap="goSpaceSelect">
+    <view class="menu-item">
+      <text>空间选择</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
   <view class="card menu-card">
     <view class="menu-item" bindtap="goServerSettings">
       <text>服务器设置</text>

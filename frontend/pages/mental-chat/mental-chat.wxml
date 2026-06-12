@@ -1,0 +1,94 @@
+<view class="page-root theme-{{currentTheme}}">
+  
+  <view class="welcome-header">
+    <text class="greeting">{{greetingText}}</text>
+    <text class="sub-greeting">{{subGreeting}}</text>
+    
+    <view class="theme-switcher">
+      <view class="tab-item {{currentTheme === 'sister' ? 'active' : ''}}" bindtap="switchTheme" data-theme="sister">情绪管理</view>
+      <view class="tab-item {{currentTheme === 'younger_sister' ? 'active' : ''}}" bindtap="switchTheme" data-theme="younger_sister">脱敏训练</view>
+      <view class="tab-item {{currentTheme === 'friend' ? 'active' : ''}}" bindtap="switchTheme" data-theme="friend">自我成长</view>
+    </view>
+  </view>
+
+  <view class="history-link-bar" bindtap="viewHistory">
+    <text class="history-link-text">📜 查看过往心灵印记</text>
+  </view>
+
+  <view class="container">
+    <view class="section-card input-card">
+      <view class="header">
+        <text class="title">{{themeTitle}}</text>
+        <text class="subtitle">{{themeSubtitle}}</text>
+      </view>
+      <textarea class="emotion-input" placeholder="{{inputPlaceholder}}" bindinput="onInput" value="{{userInput}}" maxlength="500" />
+      <button class="submit-btn" bindtap="submitEmotion" loading="{{loading}}" disabled="{{!userInput}}">
+        开启心灵按摩
+      </button>
+    </view>
+
+    <view class="result-section" wx:if="{{result}}">
+      <view class="result-card">
+        <text class="card-label">🔍 {{objectiveLabel}}</text>
+        <text class="card-content">{{result.objective_text}}</text>
+      </view>
+      <view class="result-card highlight">
+        <text class="card-label">🌿 {{comfortLabel}}</text>
+        <text class="card-content">{{result.comfort_text}}</text>
+      </view>
+    </view>
+
+    <view class="section-card intervention-card" wx:if="{{currentTheme === 'sister'}}">
+      <view class="section-header">
+        <text class="section-title">✨ 呼吸冥想引导</text>
+        <button class="stop-btn-mini" bindtap="emergencyStop">⚠️ 我快爆炸了</button>
+      </view>
+      <view class="breathing-container">
+        <view class="breathing-circle {{isInhaling ? 'expand' : 'shrink'}}" wx:if="{{showBreathing}}"></view>
+        <text class="breathing-hint" wx:if="{{showBreathing}}">{{breathingHint}}</text>
+        <button class="submit-btn" bindtap="startBreathing" wx:if="{{!showBreathing}}">开始呼吸练习</button>
+        <button class="stop-btn" bindtap="closeBreathing" wx:else>停止练习</button>
+      </view>
+    </view>
+
+    <view class="section-card intervention-card" wx:if="{{currentTheme === 'younger_sister'}}">
+      <view class="section-header">
+        <text class="section-title">🗑️ 评价碎纸机</text>
+        <button class="stop-btn-mini" bindtap="emergencyShred">💢 真的很火大</button>
+      </view>
+      <view class="shredder-box">
+        <input class="shred-input" placeholder="输入那些刺耳的话..." bindinput="onShredInput" value="{{shredText}}"/>
+        <view class="shredder-machine {{isShredding ? 'shaking' : ''}}" bindtap="startShred">
+          <text class="machine-icon">🗑️</text>
+          <text class="machine-text">{{isShredding ? '正在粉碎负能量...' : '点击粉碎'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card intervention-card" wx:if="{{currentTheme === 'friend'}}">
+      <view class="section-header">
+        <text class="section-title">🧶 塑造主体性小羊</text>
+        <button class="stop-btn-mini" bindtap="emergencySheep">💡 找回我自己</button>
+      </view>
+      <view class="puzzle-container">
+        <view class="sheep-assembly-area {{starCount >= 7 ? 'sheep-fly-animation' : ''}}">
+          <text class="sheep-part part-1 {{starCount >= 1 ? 'active' : ''}}">🐑</text>
+          <text class="sheep-part part-2 {{starCount >= 2 ? 'active' : ''}}">🧣</text>
+          <text class="sheep-part part-3 {{starCount >= 3 ? 'active' : ''}}">👒</text>
+          <text class="sheep-part part-4 {{starCount >= 4 ? 'active' : ''}}">👕</text>
+          <text class="sheep-part part-5 {{starCount >= 5 ? 'active' : ''}}">👓</text>
+          <text class="sheep-part part-6 {{starCount >= 6 ? 'active' : ''}}">👟</text>
+          <text class="sheep-part part-7 {{starCount >= 7 ? 'active' : ''}}">🌻</text>
+        </view>
+        <text class="final-star {{starCount >= 7 ? 'show' : ''}}" wx:if="{{starCount >= 7}}">🌟</text>
+        <button class="submit-btn" bindtap="lightStar" wx:if="{{starCount < 7}}">赋予能量 ({{starCount}}/7)</button>
+        <button class="stop-btn" bindtap="resetSheep" wx:else>重新开始塑造</button>
+      </view>
+    </view>
+
+  </view>
+
+  <view class="global-breathing-trigger" bindtap="emergencyStop">
+    <view class="mini-circle-pulse"></view>
+  </view>
+</view>

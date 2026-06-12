@@ -1,0 +1,65 @@
+<view class="page-root theme-{{currentTheme}}">
+  <view class="welcome-header">
+    <text class="greeting">心灵奇旅</text>
+    <text class="sub-greeting">记录每一刻的悸动，见证每一步的成长</text>
+    
+    <view class="weekly-btn-container">
+      <button class="weekly-report-btn" bindtap="fetchWeeklyReport">
+        <text class="btn-icon">✨</text>
+        <text>查看本周心灵深度周报</text>
+      </button>
+    </view>
+  </view>
+
+  <view class="container">
+    <view class="section-card shadow-card">
+      <view class="picker-row">
+        <picker class="glass-picker" bindchange="onThemeChange" value="{{themeIndex}}" range="{{themeOptions}}">
+          <view class="picker-item">
+            <text class="label">视角：</text>
+            <text class="value">{{themeOptions[themeIndex]}}</text>
+          </view>
+        </picker>
+        <picker class="glass-picker" bindchange="onRangeChange" value="{{rangeIndex}}" range="{{rangeOptions}}">
+          <view class="picker-item">
+            <text class="label">时间跨度：</text>
+            <text class="value">{{rangeOptions[rangeIndex]}}</text>
+          </view>
+        </picker>
+      </view>
+
+      <button class="submit-btn" bindtap="fetchStats">生成可视化报告</button>
+    </view>
+
+    <view class="report-area" wx:if="{{scoreBars.length}}">
+      <view class="section-card trend-card">
+        <view class="trend-bars">
+          <view wx:for="{{scoreBars}}" wx:key="label" class="trend-item">
+            <view class="bar-wrap">
+              <view class="trend-bar" style="height: {{item.height}}rpx;"></view>
+            </view>
+            <text class="bar-score">{{item.score}}</text>
+            <text class="bar-label">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="section-card explanation-card">
+        <view class="exp-header">
+          <text class="exp-title">📊 深度分析解读</text>
+          <view class="exp-badge">趋势</view>
+        </view>
+        <view class="exp-line"></view>
+        <text class="exp-content">{{statsExplanation}}</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:elif="{{statsMsg}}">
+      <view class="empty-icon-wrap">
+        <text class="empty-icon">📈</text>
+      </view>
+      <text class="empty-text">{{statsMsg}}</text>
+      <text class="empty-hint">多和我交流，数据会更精准哦</text>
+    </view>
+  </view>
+</view>

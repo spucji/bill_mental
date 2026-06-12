@@ -1,0 +1,52 @@
+<view class="history-page">
+  <view class="filter-sticky-header">
+    <view class="filter-bar">
+      <picker bindchange="onThemeChange" range="{{themeOptions}}" class="picker-item">
+        <text class="picker-label">主题</text>
+        <view class="picker-value">{{themeOptions[themeIdx]}}</view>
+      </picker>
+      <view class="divider"></view>
+      <picker mode="date" bindchange="onDateChange" data-type="startDate" class="picker-item">
+        <text class="picker-label">开始日期</text>
+        <view class="picker-value">{{startDate || '不限'}}</view>
+      </picker>
+      <view class="divider"></view>
+      <picker mode="date" bindchange="onDateChange" data-type="endDate" class="picker-item">
+        <text class="picker-label">结束日期</text>
+        <view class="picker-value">{{endDate}}</view>
+      </picker>
+    </view>
+  </view>
+  
+  <scroll-view scroll-y class="history-list-scroll">
+    <view class="list-container">
+      <block wx:if="{{records.length > 0}}">
+        <view wx:for="{{records}}" wx:key="index" class="timeline-item">
+          <view class="timeline-dot dot-{{item.theme_key || 'sister'}}"></view>
+          
+          <view class="chat-card shadow-sm">
+            <view class="card-header">
+              <view class="theme-tag tag-{{item.theme_key || 'sister'}}">{{item.theme_name}}</view>
+              <text class="time-stamp">{{item.time}}</text>
+            </view>
+
+            <view class="chat-bubbles">
+              <view class="msg-row {{item.role == '我' ? 'row-user' : 'row-ai'}}">
+                <view class="avatar">{{item.role == '我' ? 'ME' : 'AI'}}</view>
+                <view class="bubble">
+                  <text class="content-text">{{item.content}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <view wx:else class="empty-state">
+        <text style="font-size: 100rpx;">📭</text>
+      
+        <text class="empty-text">这段时间还没有留下心灵足迹呢...</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

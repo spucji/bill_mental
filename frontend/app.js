@@ -5,6 +5,9 @@ App({
     baseURL: '',
     token: '',
     account: '',
+    userId: '',
+    username: '',
+    currentTheme: 'sister',
     allRecords: [],
     allTags: [],
     allCategories: [],
@@ -18,9 +21,13 @@ App({
 
     const token = wx.getStorageSync('token')
     const account = wx.getStorageSync('account')
+    const userId = wx.getStorageSync('userId')
+    const username = wx.getStorageSync('mentalUsername')
     if (token && account) {
       this.globalData.token = token
       this.globalData.account = account
+      this.globalData.userId = userId || ''
+      this.globalData.username = username || ''
     }
   },
 
@@ -31,6 +38,36 @@ App({
     if (!this.globalData.token && current && current.route !== 'pages/login/login') {
       wx.reLaunch({ url: '/pages/login/login' })
     }
+  },
+
+  request(options) {
+    const app = this
+    const url = (app.globalData.baseURL || '') + options.url
+    const header = options.header || {}
+    header['Content-Type'] = header['Content-Type'] || 'application/json'
+    header['Authorization'] = 'Bearer ' + app.globalData.token
+    return wx.request({
+      url: url,
+      method: options.method || 'GET',
+      data: options.data,
+      responseType: options.responseType,
+      header: header,
+      success(res) {
+        if (res.statusCode === 401) {
+          wx.showToast({ title: '登录已过期', icon: 'none' })
+          setTimeout(function () { wx.reLaunch({ url: '/pages/login/login' }) }, 1200)
+          if (options.fail) options.fail(res)
+          return
+        }
+
+        if (res.data && res.data.code === 0) {
+          res.data = res.data.data
+        }
+        if (options.success) options.success(res)
+      },
+      fail: options.fail,
+      complete: options.complete
+    })
   },
 
   async touchRecords() {

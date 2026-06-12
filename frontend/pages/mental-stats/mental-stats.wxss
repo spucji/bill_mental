@@ -1,0 +1,231 @@
+/* pages/stats/stats.wxss */
+
+/* --- 基础变量定义 --- */
+.page-root {
+  min-height: 100vh;
+  background-color: #fcfdfe; 
+  padding-bottom: 80rpx;
+  --main-color: #2e7d32; /* 默认绿 */
+  --btn-shadow: rgba(46, 125, 50, 0.2);
+}
+
+/* 主题颜色切换 */
+.theme-sister { --main-color: #2e7d32; --btn-shadow: #1b5e20; }
+.theme-younger_sister { --main-color: #d81b60; --btn-shadow: #880e4f; }
+.theme-friend { --main-color: #ef6c00; --btn-shadow: #e65100; }
+
+/* --- 顶部 Header --- */
+.welcome-header {
+  padding: 100rpx 40rpx 140rpx;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfdfe 100%);
+  color: #1a1a1a; 
+}
+
+.greeting { 
+  font-size: 56rpx; 
+  font-weight: 800; 
+  display: block; 
+  color: #1a1a1a;
+  letter-spacing: 2rpx;
+}
+
+.sub-greeting { 
+  font-size: 26rpx; 
+  color: #7f8c8d;
+  margin-top: 10rpx; 
+  display: block;
+}
+
+/* --- 周报按钮优化 --- */
+.weekly-btn-container {
+  margin-top: 40rpx;
+}
+
+.weekly-report-btn {
+  background: var(--main-color) !important;
+  color: #ffffff !important;
+  border-radius: 60rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  box-shadow: 0 10rpx 30rpx var(--btn-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0;
+  border: none;
+}
+
+.btn-icon { margin-right: 12rpx; font-size: 36rpx; }
+
+/* --- 容器与卡片 --- */
+.container { 
+  margin-top: -60rpx; 
+  padding: 0 32rpx; 
+}
+
+.section-card {
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+}
+
+.shadow-card {
+  box-shadow: 0 10rpx 50rpx rgba(0,0,0,0.05);
+}
+
+/* --- 选择器样式 --- */
+.picker-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+  gap: 20rpx;
+}
+
+.glass-picker { flex: 1; }
+
+.picker-item {
+  background: #f8f9fa;
+  padding: 24rpx 10rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  border: 1rpx solid #edf2f7;
+}
+
+.label { font-size: 24rpx; color: #94a3b8; margin-right: 6rpx; }
+.value { font-size: 28rpx; color: #1e293b; font-weight: 600; }
+
+/* --- 提交按钮 (极粗边框版) --- */
+.submit-btn {
+  background: #ffffff !important;
+  color: var(--main-color) !important; 
+  border: 5rpx solid var(--main-color) !important;
+  border-radius: 100rpx;
+  font-weight: 800;
+  font-size: 32rpx;
+  height: 100rpx;
+  line-height: 90rpx; 
+  box-shadow: 0 8rpx 0rpx var(--btn-shadow); 
+  transition: all 0.1s;
+}
+
+.submit-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 2rpx 0rpx var(--btn-shadow);
+  background: #f8f9fa !important;
+}
+
+/* --- 报告展示 --- */
+.stats-img {
+  width: 100%;
+  border-radius: 16rpx;
+}
+
+.trend-card {
+  padding: 32rpx 20rpx 24rpx;
+}
+
+.trend-bars {
+  height: 260rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 12rpx;
+}
+
+.trend-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bar-wrap {
+  height: 170rpx;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.trend-bar {
+  width: 28rpx;
+  min-height: 8rpx;
+  border-radius: 999rpx 999rpx 8rpx 8rpx;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), var(--main-color));
+  box-shadow: 0 10rpx 24rpx var(--btn-shadow);
+}
+
+.bar-score {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.bar-label {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: #95a5a6;
+}
+
+.explanation-card {
+  border-top: 10rpx solid var(--main-color);
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.exp-title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.exp-badge {
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.exp-line {
+  height: 4rpx;
+  background: #f1f5f9;
+  margin-bottom: 24rpx;
+  width: 100rpx;
+}
+
+.exp-content {
+  font-size: 30rpx;
+  color: #334155;
+  line-height: 1.8;
+  white-space: pre-line; /* 保持 Python 传回的换行符 */
+}
+
+/* --- 空状态 --- */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon-wrap {
+  width: 120rpx;
+  height: 120rpx;
+  background: #f1f5f9;
+  border-radius: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30rpx;
+}
+
+.empty-icon { font-size: 60rpx; }
+.empty-text { font-size: 32rpx; color: #475569; font-weight: 600; display: block; }
+.empty-hint { font-size: 24rpx; color: #94a3b8; margin-top: 10rpx; display: block; }

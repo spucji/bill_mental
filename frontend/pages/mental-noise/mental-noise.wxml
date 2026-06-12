@@ -1,0 +1,39 @@
+<view class="page-root theme-{{currentTheme}}">
+  <view class="welcome-header">
+    <text class="greeting">宁静时分</text>
+    <text class="sub-greeting">选择一段声音，开启沉浸式疗愈</text>
+  </view>
+
+  <view class="container">
+    <view class="noise-grid">
+      <view 
+        wx:for="{{noiseList}}" 
+        wx:key="type" 
+        class="noise-card {{currentNoise === item.type ? 'active-play' : ''}}" 
+        bindtap="playNoise" 
+        data-type="{{item.type}}"
+      >
+        <view class="icon-circle">{{item.icon}}</view>
+        <text class="noise-name">{{item.name}}</text>
+        
+        <view class="wave-container" wx:if="{{currentNoise === item.type && isPlaying}}">
+          <view class="wave-bar"></view>
+          <view class="wave-bar"></view>
+          <view class="wave-bar"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="safe-bottom-space"></view>
+
+    <view class="player-bar {{isPlaying ? 'show' : ''}}">
+      <view class="player-left">
+        <text class="playing-icon">🎵</text>
+        <text class="playing-name">{{playingName}}</text>
+      </view>
+      <view class="player-right">
+        <button class="stop-round-btn" bindtap="stopNoise">停止</button>
+      </view>
+    </view>
+  </view>
+</view>

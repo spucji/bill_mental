@@ -1,0 +1,120 @@
+/* pages/noise/noise.wxss */
+.page-root {
+  min-height: 100vh;
+  background-color: #f8faf8;
+}
+
+/* 1. 顶部留白优化：适中高度，不至于太远 */
+.welcome-header {
+  padding: 100rpx 40rpx 60rpx; /* 降低了下边距 */
+  background: var(--bg-light);
+}
+
+.greeting { 
+  font-size: 48rpx; 
+  font-weight: 900; 
+  color: #000; 
+}
+
+.sub-greeting { 
+  font-size: 26rpx; 
+  color: #5d6d7e; 
+  margin-top: 12rpx;
+  display: block;
+}
+
+/* 2. 6个音频的网格布局：稍微缩小高度 */
+.noise-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25rpx;
+  padding: 20rpx 30rpx;
+}
+
+.noise-card {
+  height: 260rpx; /* 从320压缩到260，适应6个卡片 */
+  background: #ffffff;
+  border-radius: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 4rpx solid #eee;
+  transition: all 0.2s ease;
+}
+
+.active-play {
+  border: 6rpx solid var(--main-color) !important;
+  box-shadow: 0 10rpx 30rpx var(--btn-shadow);
+}
+
+.icon-circle { font-size: 70rpx; margin-bottom: 10rpx; }
+.noise-name { font-size: 28rpx; font-weight: 600; color: #333; }
+
+/* 3. 底部播放条：紧凑分布 */
+.player-bar {
+  position: fixed;
+  bottom: 50rpx;
+  left: 30rpx;
+  right: 30rpx;
+  height: 110rpx; /* 高度稍微减小 */
+  background: var(--main-color);
+  border-radius: 55rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  z-index: 100;
+  box-shadow: 0 15rpx 40rpx var(--btn-shadow);
+  transform: translateY(200rpx);
+  transition: transform 0.4s ease;
+}
+
+.player-bar.show { transform: translateY(0); }
+
+.player-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  overflow: hidden; /* 防止名字太长挤占空间 */
+}
+
+.playing-icon {
+  font-size: 36rpx;
+  margin-right: 15rpx;
+  flex-shrink: 0;
+}
+
+.playing-name {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-right {
+  flex-shrink: 0;
+  margin-left: 20rpx;
+}
+
+.stop-round-btn {
+  background: #fff !important;
+  color: var(--main-color) !important;
+  font-size: 24rpx;
+  font-weight: 900;
+  padding: 0 30rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 30rpx;
+  width: auto !important;
+  min-width: 100rpx;
+}
+
+/* 4. 底部占位：防止6张卡片堆叠到底部时被播放条挡住 */
+.safe-bottom-space {
+  height: 180rpx;
+  width: 100%;
+}

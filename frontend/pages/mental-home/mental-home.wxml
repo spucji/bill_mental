@@ -1,0 +1,58 @@
+<view class="home-container">
+  <view class="welcome-section">
+    <block wx:if="{{isLoading}}">
+      <view class="loading-pulse"></view>
+      <text class="loading-text">正在同步心灵空间...</text>
+    </block>
+    <block wx:else>
+      <text class="welcome-msg">{{welcomeMsg}}</text>
+    </block>
+  </view>
+
+  <view class="home-header">
+    <text class="home-title">心灵空间</text>
+    <text class="home-subtitle">在这里，每一刻的情绪都值得被温柔对待</text>
+  </view>
+
+  <view class="card-list">
+    <view class="theme-card sister" bindtap="selectTheme" data-theme="sister">
+      <view class="icon-box">🌿</view>
+      <view class="text-group">
+        <text class="name">情绪缓冲垫</text>
+        <text class="desc">针对焦虑与压力，重获平静</text>
+      </view>
+      <view class="arrow">></view>
+    </view>
+
+    <view class="theme-card younger_sister" bindtap="selectTheme" data-theme="younger_sister">
+      <view class="icon-box">🌸</view>
+      <view class="text-group">
+        <text class="name">脱敏·爱自己</text>
+        <text class="desc">课题分离，建立自我价值感</text>
+      </view>
+      <view class="arrow">></view>
+    </view>
+
+    <view class="theme-card friend" bindtap="selectTheme" data-theme="friend">
+      <view class="icon-box">🐑</view>
+      <view class="text-group">
+        <text class="name">聪明的小羊</text>
+        <text class="desc">建立主体性，相信自己的力量</text>
+      </view>
+      <view class="arrow">></view>
+    </view>
+  </view>
+
+  <view class="quick-tools">
+    <view class="tool-item" bindtap="goToTool" data-url="/pages/mental-stats/mental-stats">
+      <text class="tool-text">📊 趋势报告</text>
+    </view>
+    <view class="tool-item" bindtap="goToTool" data-url="/pages/mental-noise/mental-noise">
+      <text class="tool-text">🎵 宁静时分</text>
+    </view>
+  </view>
+
+  <view class="home-footer">
+    <text>每一个决定，都是为你自己而做</text>
+  </view>
+</view>

@@ -1,9 +1,15 @@
 {
   "pages": [
     "pages/login/login",
+    "pages/space-select/space-select",
     "pages/records/records",
     "pages/analysis/analysis",
     "pages/mine/mine",
+    "pages/mental-home/mental-home",
+    "pages/mental-chat/mental-chat",
+    "pages/mental-stats/mental-stats",
+    "pages/mental-noise/mental-noise",
+    "pages/mental-history/mental-history",
     "pages/record-edit/record-edit",
     "pages/change-password/change-password",
     "pages/tags/tags",

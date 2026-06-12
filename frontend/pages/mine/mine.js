@@ -14,6 +14,7 @@ Page({
   goCategories() { wx.navigateTo({ url: '/pages/categories/categories' }) },
   goPlatforms() { wx.navigateTo({ url: '/pages/platforms/platforms' }) },
   goChangePassword() { wx.navigateTo({ url: '/pages/change-password/change-password' }) },
+  goSpaceSelect() { wx.navigateTo({ url: '/pages/space-select/space-select' }) },
 
   goServerSettings() {
     var self = this
@@ -41,8 +42,12 @@ Page({
         if (res.confirm) {
           app.globalData.token = ''
           app.globalData.account = ''
+          app.globalData.userId = ''
+          app.globalData.username = ''
           wx.removeStorageSync('token')
           wx.removeStorageSync('account')
+          wx.removeStorageSync('userId')
+          wx.removeStorageSync('mentalUsername')
           wx.reLaunch({ url: '/pages/login/login' })
         }
       }

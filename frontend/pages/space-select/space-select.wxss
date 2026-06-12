@@ -1,0 +1,103 @@
+.space-page {
+  min-height: 100vh;
+  padding: 72rpx 32rpx 48rpx;
+  box-sizing: border-box;
+  background: #f4f3f0;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40rpx;
+}
+
+.eyebrow {
+  font-size: 24rpx;
+  color: #8b8986;
+  margin-bottom: 12rpx;
+}
+
+.title {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #3f3e3a;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #77736f;
+  margin-top: 14rpx;
+}
+
+.space-card {
+  min-height: 180rpx;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  margin-bottom: 22rpx;
+  background: rgba(255,255,255,0.72);
+  box-shadow: 0 10rpx 36rpx rgba(55, 52, 46, 0.07);
+}
+
+.space-card.bill {
+  border-left: 8rpx solid #5b8c5a;
+}
+
+.space-card.mental {
+  border-left: 8rpx solid #6b8fa3;
+}
+
+.space-icon {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 24rpx;
+  background: #4a4946;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: 700;
+  margin-right: 26rpx;
+}
+
+.mental .space-icon {
+  background: #6b8fa3;
+}
+
+.space-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.space-title {
+  font-size: 34rpx;
+  color: #3f3e3a;
+  font-weight: 700;
+}
+
+.space-desc {
+  font-size: 25rpx;
+  color: #7f7c77;
+  margin-top: 10rpx;
+  line-height: 1.5;
+}
+
+.arrow {
+  font-size: 56rpx;
+  color: #b5b3b0;
+}
+
+.ghost-btn {
+  margin-top: 24rpx;
+  background: transparent;
+  border: 1rpx solid #c9c5bd;
+  color: #68645f;
+  border-radius: 18rpx;
+  font-size: 28rpx;
+}
