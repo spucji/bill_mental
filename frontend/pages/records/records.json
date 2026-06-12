@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "date-picker": "/components/date-picker/date-picker",
+    "voice-bubble": "/components/voice-bubble/voice-bubble"
+  },
+  "componentPlaceholder": {
+    "date-picker": "view",
+    "voice-bubble": "view"
+  }
+}

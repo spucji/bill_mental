@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "chart-canvas": "/components/chart-canvas/chart-canvas",
+    "date-picker": "/components/date-picker/date-picker"
+  },
+  "componentPlaceholder": {
+    "chart-canvas": "view",
+    "date-picker": "view"
+  }
+}

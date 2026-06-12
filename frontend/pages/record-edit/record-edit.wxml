@@ -1,0 +1,95 @@
+<wxs module="utils" src="./record-edit.wxs" />
+<view class="edit-page">
+  <view class="ambient-orb orb-edit"></view>
+
+  <view class="card ambient-glow">
+    <!-- 类型切换 -->
+    <view class="type-switch">
+      <view class="type-tab {{form.type === 'expense' ? 'expense-active' : ''}}" bindtap="switchType" data-type="expense">支出</view>
+      <view class="type-tab {{form.type === 'income' ? 'income-active' : ''}}" bindtap="switchType" data-type="income">收入</view>
+    </view>
+
+    <!-- 金额 -->
+    <view class="edit-row">
+      <text class="edit-label">金额</text>
+      <input class="amount-input" type="digit" placeholder="0.00" value="{{form.amount}}" bindinput="onField" data-field="amount" focus="{{!editId}}" />
+    </view>
+
+    <!-- 日期 -->
+    <view class="edit-row">
+      <text class="edit-label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="onDatePick">
+        <view class="picker-val">{{form.date}}</view>
+      </picker>
+    </view>
+
+    <!-- 备注 -->
+    <view class="edit-row">
+      <text class="edit-label">备注</text>
+      <input class="edit-input" placeholder="简要描述" value="{{form.note}}" bindinput="onField" data-field="note" />
+    </view>
+
+    <!-- 语音原文（来自语音录入时显示）-->
+    <view wx:if="{{voiceRawText}}" class="voice-raw-box">
+      <text class="voice-raw-label">🎤 语音原文</text>
+      <text class="voice-raw-text">{{voiceRawText}}</text>
+    </view>
+
+    <!-- 交易类别 -->
+    <view class="edit-row">
+      <text class="edit-label">交易类别</text>
+      <scroll-view scroll-x class="chip-scroll">
+        <view class="chip-row">
+          <view class="chip-cell {{!selectedCategoryId ? 'chip-cell-active' : ''}}" bindtap="pickCategory" data-id="{{0}}">不限</view>
+          <view
+            wx:for="{{allCategories}}"
+            wx:key="id"
+            class="chip-cell {{selectedCategoryId === item.id ? 'chip-cell-active' : ''}}"
+            bindtap="pickCategory"
+            data-id="{{item.id}}"
+          >{{item.name}}</view>
+        </view>
+      </scroll-view>
+      <text class="tag-link" bindtap="manageCategories">管理交易类别 ›</text>
+    </view>
+
+    <!-- 交易平台 -->
+    <view class="edit-row">
+      <text class="edit-label">交易平台</text>
+      <scroll-view scroll-x class="chip-scroll">
+        <view class="chip-row">
+          <view class="chip-cell {{!selectedPlatformId ? 'chip-cell-active' : ''}}" bindtap="pickPlatform" data-id="{{0}}">不限</view>
+          <view
+            wx:for="{{allPlatforms}}"
+            wx:key="id"
+            class="chip-cell {{selectedPlatformId === item.id ? 'chip-cell-active' : ''}}"
+            bindtap="pickPlatform"
+            data-id="{{item.id}}"
+          >{{item.name}}</view>
+        </view>
+      </scroll-view>
+      <text class="tag-link" bindtap="managePlatforms">管理交易平台 ›</text>
+    </view>
+
+    <!-- 其他标签 -->
+    <view class="edit-row">
+      <text class="edit-label">其他标签</text>
+      <view class="tag-grid">
+        <view
+          wx:for="{{allTags}}"
+          wx:key="id"
+          class="tag-cell {{utils.isTagSelected(selectedTagIds, item.id) ? 'tag-cell-active' : ''}}"
+          bindtap="toggleTag"
+          data-id="{{item.id}}"
+        >{{item.name}}</view>
+      </view>
+      <text class="tag-link" bindtap="manageTags">管理其他标签 ›</text>
+    </view>
+  </view>
+
+  <!-- 操作 -->
+  <view class="edit-actions">
+    <button wx:if="{{editId}}" class="btn-ghost del-btn" bindtap="deleteRecord">删除</button>
+    <button class="btn-primary save-btn" bindtap="saveRecord">{{editId ? '保存修改' : '确认录入'}}</button>
+  </view>
+</view>

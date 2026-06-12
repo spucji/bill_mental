@@ -1,0 +1,59 @@
+.voice-fab {
+  position: fixed;
+  right: 24rpx;
+  bottom: 100rpx;
+  width: 176rpx;
+  height: 176rpx;
+  border-radius: 88rpx;
+  background: linear-gradient(135deg, #C9705A 0%, #B85C47 100%);
+  box-shadow: 0 10rpx 42rpx rgba(183, 86, 68, 0.28);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  transition: all 0.3s;
+}
+
+.voice-fab.recording {
+  background: var(--expense);
+  transform: scale(1.08);
+  box-shadow: 0 6rpx 28rpx rgba(233, 75, 72, 0.40);
+}
+
+.voice-icon {
+  font-size: 56rpx;
+  color: #fff;
+}
+
+.voice-fab.recording .voice-icon {
+  animation: voice-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.voice-label {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.85);
+  margin-top: 6rpx;
+}
+
+.voice-fab.recording .voice-label {
+  color: rgba(255,255,255,0.8);
+}
+
+.voice-ripple {
+  position: absolute;
+  inset: -20rpx;
+  border-radius: 50%;
+  border: 3rpx solid rgba(255,255,255,0.35);
+  animation: ripple-out 1.5s ease-out infinite;
+}
+
+@keyframes ripple-out {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}

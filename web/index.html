@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="/manifest.json">
+  <title>轻记账</title>
+  <style>
+/* ============================================
+   轻记账 Web 全局样式
+   设计基准: iPhone 6 (375px), 1rem=16px
+   rpx 换算: 750rpx=375px → 2rpx=1px → 0.0625rem=2rpx
+   所以: 1rpx ≈ 0.03125rem, 大体 rpx/32≈rem
+   ============================================ */
+
+:root {
+  --bg-oat: #F4F3F0;
+  --text-primary: #4A4946;
+  --text-secondary: #6B6A67;
+  --text-muted: #B5B3B0;
+  --accent: #C9705A;
+  --accent-dark: #B85C47;
+  --income: #4CAF50;
+  --expense: #F44336;
+  --card-bg: rgba(255,255,255,0.72);
+  --card-border: rgba(0,0,0,0.04);
+  --shadow-sm: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  --radius: 14px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  color: #4A4946;
+  background-color: #F4F3F0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(180,170,150,0.03) 2px, rgba(180,170,150,0.03) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(180,170,150,0.02) 2px, rgba(180,170,150,0.02) 4px);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app { padding-bottom:60px; position:relative; }
+
+/* ========== Tab Bar ========== */
+#tabbar {
+  position:fixed; bottom:0; left:0; right:0; height:56px;
+  display:flex; align-items:center; justify-content:space-around;
+  background:rgba(244,243,240,0.94); backdrop-filter:blur(20px);
+  border-top:1px solid rgba(0,0,0,0.05);
+  z-index:100;
+}
+.tab-item {
+  display:flex; flex-direction:column; align-items:center;
+  text-decoration:none; color:var(--text-muted); font-size:11px;
+  padding:4px 0; min-width:64px; transition:color .2s;
+}
+.tab-item.active { color: var(--text-primary); }
+.tab-icon { font-size:14px; font-weight:700; margin-bottom:0; width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:50%; line-height:1; transition:background .2s,transform .2s; color:#B5B3B0; background:rgba(180,170,150,0.15); flex-shrink:0; }
+.tab-item.active .tab-icon { transform:scale(1.1); color:#4A4946; background:rgba(180,170,150,0.3); }
+
+/* ========== 通用组件 ========== */
+.card {
+  background: rgba(255,255,255,0.85);
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.btn-primary {
+  display:block; width:100%; padding:12px 0; border:none; border-radius:var(--radius);
+  background: linear-gradient(135deg, #4A4946, #3A3936);
+  color:#fff; font-size:16px; font-weight:600; text-align:center;
+  cursor:pointer; transition: opacity .2s;
+}
+.btn-primary:active { opacity:0.85; }
+.btn-primary:disabled { opacity:0.4; }
+
+.btn-ghost {
+  background:none; border:none; color:var(--text-muted); font-size:14px;
+  padding:10px 20px; cursor:pointer;
+}
+
+.btn-danger {
+  background: var(--expense); color:#fff; border:none;
+  padding:8px 16px; border-radius:8px; font-size:13px; cursor:pointer;
+}
+
+.btn-sm {
+  padding:6px 14px; font-size:13px; border-radius:8px;
+  background:var(--text-primary); color:#fff; border:none; cursor:pointer;
+}
+
+/* ========== Toast ========== */
+.toast {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.75); color:#fff; padding:10px 24px;
+  border-radius:10px; font-size:14px; z-index:9999; opacity:0; pointer-events:none;
+  transition:opacity .25s;
+}
+.toast.show { opacity:1; }
+
+/* ========== Loading ========== */
+.loading-overlay {
+  position:fixed; inset:0; z-index:9998; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(244,243,240,0.6);
+}
+.loading-overlay.show { display:flex; }
+.loading-spin {
+  width:36px; height:36px; border:3px solid var(--text-muted);
+  border-top-color:var(--text-primary); border-radius:50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg) } }
+
+/* ========== Modal ========== */
+.modal-overlay {
+  position:fixed; inset:0; z-index:9990; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.3); backdrop-filter:blur(4px);
+}
+.modal-overlay.show { display:flex; }
+.modal-box {
+  background:#fff; border-radius:16px; width:300px; padding:24px 20px;
+  text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.12);
+}
+.modal-title { font-size:17px; font-weight:600; margin-bottom:12px; }
+.modal-body { font-size:14px; color:var(--text-secondary); margin-bottom:20px; line-height:1.6; }
+.modal-btns { display:flex; gap:12px; justify-content:center; }
+.modal-btns .btn-primary { width:auto; padding:8px 24px; font-size:15px; }
+.modal-btns .btn-ghost { width:auto; padding:8px 24px; }
+
+/* ========== 输入控件 ========== */
+.input {
+  width:100%; padding:12px 16px; border:1px solid rgba(0,0,0,0.08);
+  border-radius:var(--radius); font-size:15px; background:rgba(0,0,0,0.02);
+  color:var(--text-primary); outline:none;
+}
+.input:focus { border-color: var(--text-muted); }
+
+select.input {
+  appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%234A4946' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; padding-right:32px;
+}
+
+/* ========== 页面通用 ========== */
+.page { padding:16px; display:none; }
+.page.active { display:block; min-height:100vh; }
+
+.page-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+}
+.page-title { font-size:20px; font-weight:700; }
+
+/* 晕染光斑 */
+.ambient-orb {
+  position:absolute; border-radius:50%; filter:blur(120px);
+  opacity:0.12; pointer-events:none;
+}
+.orb-top { width:250px; height:250px; background:#A8BFCC; top:-60px; right:-50px; }
+.orb-bottom { width:200px; height:200px; background:#C5B9A8; bottom:-40px; left:-40px; }
+
+/* ========== 明细页 ========== */
+.add-bar { margin-bottom:16px; }
+.add-btn {
+  background: var(--card-bg); border:1px dashed var(--text-muted);
+  border-radius:var(--radius); padding:14px; text-align:center;
+  color:var(--text-secondary); font-size:15px; cursor:pointer;
+}
+
+.summary-card {
+  display:flex; justify-content:space-around;
+  padding:16px; margin-bottom:16px;
+}
+.summary-item { text-align:center; }
+.summary-label { display:block; font-size:12px; color:var(--text-muted); margin-bottom:4px; }
+.summary-value { font-size:18px; font-weight:700; }
+.summary-value.income { color:var(--income); }
+.summary-value.expense { color:var(--expense); }
+.summary-divider { width:1px; background:rgba(0,0,0,0.06); }
+
+.record-scroll { max-height:calc(100vh - 340px); overflow-y:auto; }
+
+.record-item {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:14px 16px; margin-bottom:10px; cursor:pointer;
+}
+.record-left { flex:1; min-width:0; }
+.record-meta { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }
+.meta-pill { padding:2px 10px; border-radius:10px; font-size:11px; }
+.meta-cat { background:rgba(76,175,80,0.1); color:#388E3C; }
+.meta-plat { background:rgba(33,150,243,0.1); color:#1565C0; }
+.tag-pill { padding:2px 8px; border-radius:10px; font-size:10px; background:rgba(0,0,0,0.04); color:var(--text-secondary); }
+.tag-empty { color:var(--text-muted); }
+.record-date { font-size:12px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.record-right { font-size:17px; font-weight:600; flex-shrink:0; margin-left:12px; }
+.record-right.income { color:var(--income); }
+.record-right.expense { color:var(--expense); }
+
+.empty-state { text-align:center; padding:60px 0; }
+.empty-icon { font-size:48px; display:block; margin-bottom:12px; }
+.empty-text { font-size:16px; color:var(--text-secondary); margin-bottom:8px; }
+.empty-hint { font-size:13px; color:var(--text-muted); }
+
+.list-end { text-align:center; padding:20px; font-size:12px; color:var(--text-muted); }
+
+/* ========== 登录页 ========== */
+.login-page {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.login-card { width:90%; max-width:300px; padding:48px 32px; text-align:center; }
+.brand { margin-bottom:36px; }
+.brand-icon { font-size:48px; display:block; margin-bottom:12px; }
+.brand-name { font-size:28px; font-weight:700; letter-spacing:4px; }
+.brand-desc { display:block; font-size:13px; color:var(--text-muted); margin-top:8px; }
+.login-input-n { width:100%; padding:12px; border:1px solid rgba(0,0,0,0.08); border-radius:var(--radius); font-size:16px; text-align:center; margin-bottom:20px; outline:none; background:rgba(0,0,0,0.02); }
+.login-hint { margin-top:18px; font-size:12px; color:var(--text-muted); }
+.server-section { margin-top:20px; }
+.server-row { display:flex; align-items:center; }
+.server-cached { padding:10px 14px; background:rgba(0,0,0,0.02); border-radius:10px; font-size:13px; width:100%; }
+.server-label { color:var(--text-muted); margin-right:8px; }
+.server-val { flex:1; color:var(--text-primary); text-align:left; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.server-edit { color:var(--text-muted); font-size:12px; margin-left:8px; padding-left:10px; border-left:1px solid rgba(0,0,0,0.06); }
+
+.login-server-bottom { margin-top:24px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06); }
+.server-edit-row { display:flex; align-items:center; gap:8px; }
+.server-edit-label { font-size:13px; color:var(--text-muted); white-space:nowrap; }
+.login-server-input { flex:1; padding:8px 12px; border:1px solid rgba(0,0,0,0.08); border-radius:8px; font-size:13px; outline:none; background:rgba(0,0,0,0.02); }
+.server-cached-row { display:flex; align-items:center; padding:8px 0; font-size:13px; }
+
+/* ========== 记录编辑页 ========== */
+.edit-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.edit-back { font-size:24px; cursor:pointer; color:var(--text-secondary); line-height:1; }
+
+.form-group { margin-bottom:16px; }
+.form-label { font-size:13px; color:var(--text-muted); margin-bottom:6px; display:block; }
+.form-row { display:flex; gap:8px; }
+.form-row > * { flex:1; }
+
+.type-switch { display:flex; border-radius:var(--radius); overflow:hidden; border:1px solid rgba(0,0,0,0.08); }
+.type-btn { flex:1; padding:10px 0; text-align:center; font-size:15px; cursor:pointer; border:none; background:none; transition:all .2s; }
+.type-btn.active-income { background:var(--income); color:#fff; }
+.type-btn.active-expense { background:var(--expense); color:#fff; }
+
+.tag-chips { display:flex; flex-wrap:wrap; gap:8px; }
+.tag-chip { padding:6px 14px; border-radius:20px; font-size:13px; border:1px solid rgba(0,0,0,0.08); cursor:pointer; transition:all .2s; }
+.tag-chip.active { background:var(--text-primary); color:#fff; border-color:var(--text-primary); }
+
+.voice-raw-text { margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.02); border-radius:8px; font-size:12px; color:var(--text-muted); }
+
+/* ========== 统计页 ========== */
+.page-analysis { padding:12px 16px; display:none; flex-direction:column; min-height:100vh; }
+.page-analysis.active { display:flex; }
+
+/* 筛选卡片 */
+.filter-card { padding:16px; margin-bottom:12px; border-radius:30px; }
+
+/* 日期范围双按钮 */
+.date-range-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.date-start-btn, .date-end-btn {
+  flex:1; padding:10px 0; text-align:center; font-size:14px; font-weight:500;
+  background:rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.06);
+  border-radius:12px; color:var(--text-secondary); cursor:pointer;
+  transition:all .2s;
+}
+.date-start-btn.has-value, .date-end-btn.has-value { color:var(--text-primary); font-weight:600; }
+.date-arrow { font-size:16px; color:var(--text-muted); flex-shrink:0; }
+
+/* 分段选择器 */
+.seg-group { margin-bottom:10px; }
+.seg-group:last-child { margin-bottom:0; }
+.seg-label { display:block; font-size:11px; color:var(--text-muted); margin-bottom:6px; }
+.seg-btns { display:flex; gap:6px; }
+.seg-btn {
+  flex:1; padding:8px 0; text-align:center; font-size:13px; font-weight:500;
+  background:rgba(0,0,0,0.03); border:1px solid transparent;
+  border-radius:10px; color:var(--text-secondary); cursor:pointer;
+  transition:all .2s;
+}
+.seg-btn.active { background:var(--text-primary); color:#fff; }
+
+/* KPI 卡片 */
+.kpi-card { padding:20px 16px; margin-bottom:12px; border-radius:30px; }
+.kpi-row { display:flex; justify-content:space-around; text-align:center; }
+.kpi-item { flex:1; }
+.kpi-label { font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+.kpi-value { font-size:16px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
+.kpi-value.income { color:var(--income); }
+.kpi-value.expense { color:var(--expense); }
+.kpi-divider { width:1px; background:rgba(0,0,0,0.06); margin:0 8px; flex-shrink:0; }
+
+/* 图表区域 */
+.chart-area {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.85); border-radius:30px;
+  border:1px solid rgba(0,0,0,0.04); min-height:300px;
+}
+.chart-loading { text-align:center; color:var(--text-muted); font-size:14px; }
+.chart-loading .spin { display:block; margin:0 auto 12px; width:32px; height:32px; border:3px solid rgba(0,0,0,0.06); border-top-color:var(--text-primary); border-radius:50%; animation:spin .6s linear infinite; }
+.chart-canvas-wrap { width:100%; padding:8px; text-align:center; }
+
+/* ========== 明细页 ========== */
+.records-page { padding:16px; display:none; }
+.records-page.active { display:block; min-height:100vh; }
+
+/* ========== 管理页 (标签/类目/平台) ========== */
+.mgmt-add-row { display:flex; gap:8px; margin-bottom:16px; }
+.mgmt-add-row .input { flex:1; }
+.mgmt-list-item { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.04); }
+.mgmt-name { font-size:15px; }
+.mgmt-actions { display:flex; gap:8px; align-items:center; }
+
+/* ========== 我的页 ========== */
+.mine-header { text-align:center; padding:30px 0 20px; }
+.mine-avatar { font-size:56px; margin-bottom:8px; }
+.mine-account { font-size:20px; font-weight:600; }
+.mine-menu { margin-top:20px; }
+.mine-menu-item { display:flex; justify-content:space-between; align-items:center; padding:16px 16px; border-bottom:1px solid rgba(0,0,0,0.04); cursor:pointer; }
+.mine-menu-item:active { background:rgba(0,0,0,0.02); }
+.menu-arrow { font-size:14px; color:var(--text-muted); }
+.menu-val { font-size:13px; color:var(--text-muted); max-width:200px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
+.logout-btn { margin-top:30px; width:100%; padding:12px; background:none; border:1px solid rgba(244,67,54,0.3); color:var(--expense); border-radius:var(--radius); font-size:15px; cursor:pointer; }
+
+/* ========== 语音悬浮球 ========== */
+.voice-bubble {
+  position:fixed; bottom:80px; right:16px; z-index:50;
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, #C9705A, #B85C47);
+  box-shadow:0 4px 20px rgba(201,112,90,0.35);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; cursor:pointer; transition:transform .2s,box-shadow .2s;
+  user-select:none; -webkit-user-select:none;
+}
+.voice-bubble:active { transform:scale(0.92); }
+.voice-bubble.recording {
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow:0 0 0 8px rgba(201,112,90,0.2);
+}
+@keyframes pulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(201,112,90,0.3); }
+  50% { box-shadow:0 0 0 16px rgba(201,112,90,0.05); }
+}
+
+/* ========== 日期选择器 ========== */
+.date-picker { position:relative; margin-bottom:16px; }
+.date-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.date-range-btn { font-size:14px; color:var(--text-primary); font-weight:600; background:var(--card-bg); border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:8px 16px; cursor:pointer; }
+.date-presets { display:flex; gap:6px; }
+.date-preset { padding:5px 12px; border-radius:16px; font-size:12px; border:1px solid rgba(0,0,0,0.08); cursor:pointer; }
+.date-preset.active { background:var(--text-primary); color:#fff; border-color:var(--text-primary); }
+
+.date-panel { display:none; background:var(--card-bg); border-radius:var(--radius); padding:12px; margin-top:8px; }
+.date-panel.open { display:block; }
+.cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.cal-nav button { background:none; border:none; font-size:18px; cursor:pointer; padding:4px 10px; color:var(--text-secondary); }
+.cal-month-label { font-size:15px; font-weight:600; }
+.cal-weekdays { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:11px; color:var(--text-muted); margin-bottom:6px; }
+.cal-days { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:13px; border-radius:50%; cursor:pointer; }
+.cal-day:hover { background:rgba(0,0,0,0.04); }
+.cal-day.other { color:var(--text-muted); }
+.cal-day.selected { background:var(--text-primary); color:#fff; }
+.cal-day.range { background:rgba(74,73,70,0.1); border-radius:0; }
+.cal-day.range-start { border-radius:50% 0 0 50%; }
+.cal-day.range-end { border-radius:0 50% 50% 0; }
+
+/* ========== PWA 安全区 ========== */
+@supports(padding-bottom:env(safe-area-inset-bottom)) {
+  #tabbar { padding-bottom:env(safe-area-inset-bottom); }
+  #app { padding-bottom:calc(56px + env(safe-area-inset-bottom)); }
+  .voice-bubble { bottom:calc(80px + env(safe-area-inset-bottom)); }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- 页面容器 -->
+  <div id="page-login" class="page active"></div>
+  <div id="page-records" class="records-page active"></div>
+  <div id="page-analysis" class="page-analysis"></div>
+  <div id="page-mine" class="page"></div>
+  <div id="page-record-edit" class="records-page"></div>
+  <div id="page-tags" class="records-page"></div>
+  <div id="page-categories" class="records-page"></div>
+  <div id="page-platforms" class="records-page"></div>
+
+  <!-- Tab Bar -->
+  <nav id="tabbar">
+    <a href="#/records" class="tab-item" data-tab="records">
+      <span class="tab-icon">记</span><span class="tab-label">明细</span>
+    </a>
+    <a href="#/analysis" class="tab-item" data-tab="analysis">
+      <span class="tab-icon">析</span><span class="tab-label">统计</span>
+    </a>
+    <a href="#/mine" class="tab-item" data-tab="mine">
+      <span class="tab-icon">我</span><span class="tab-label">我的</span>
+    </a>
+  </nav>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+  <!-- Loading -->
+  <div id="loading" class="loading-overlay"><div class="loading-spin"></div></div>
+  <!-- Modal -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title"></div>
+      <div class="modal-body"></div>
+      <div class="modal-btns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* === js/state.js === */
+// 全局状态 —— 替代小程序 getApp().globalData + wx.Storage
+window.__state = {
+  baseURL: localStorage.getItem('baseURL') || '',
+  token: localStorage.getItem('token') || '',
+  account: localStorage.getItem('account') || '',
+  allRecords: [],
+  allTags: [],
+  _startDate: '',
+  _endDate: '',
+
+  save(force) {
+    if (this.baseURL) localStorage.setItem('baseURL', this.baseURL)
+    if (this.token) localStorage.setItem('token', this.token)
+    else localStorage.removeItem('token')
+    if (this.account) localStorage.setItem('account', this.account)
+    else localStorage.removeItem('account')
+  },
+
+  clear() {
+    this.token = ''
+    this.account = ''
+    localStorage.removeItem('token')
+    localStorage.removeItem('account')
+  }
+}
+
+/* === js/api.js === */
+// API 层 —— fetch 封装，替代 wx.request / wx.uploadFile
+window.__api = (function () {
+  var S = window.__state
+
+  function showLoading() { document.getElementById('loading').classList.add('show') }
+  function hideLoading() { document.getElementById('loading').classList.remove('show') }
+
+  async function request(method, path, body, noLoading) {
+    if (!noLoading) showLoading()
+    try {
+      var headers = { 'Content-Type': 'application/json' }
+      if (S.token) headers['Authorization'] = 'Bearer ' + S.token
+
+      var url = S.baseURL ? S.baseURL + path : path
+      var res = await fetch(url, {
+        method: method,
+        headers: headers,
+        body: body ? JSON.stringify(body) : undefined
+      })
+
+      if (res.status === 401) {
+        S.clear()
+        __router.go('/login')
+        throw new Error('登录已过期')
+      }
+
+      var data = await res.json()
+      if (data.code === 0) return data.data
+      throw new Error(data.message || '请求失败')
+    } catch (e) {
+      if (e.message === 'Failed to fetch') throw new Error('网络错误，请检查后端是否运行')
+      throw e
+    } finally {
+      if (!noLoading) hideLoading()
+    }
+  }
+
+  function get(path, noLoading) { return request('GET', path, null, noLoading) }
+  function post(path, body, noLoading) { return request('POST', path, body, noLoading) }
+  function put(path, body, noLoading) { return request('PUT', path, body, noLoading) }
+  function del(path, noLoading) { return request('DELETE', path, null, noLoading) }
+
+  return {
+    login: function (account) { return post('/api/login', { account: account }) },
+
+    getTags: function () { return get('/api/tags', true) },
+    createTag: function (name) { return post('/api/tags', { name: name }) },
+    updateTag: function (id, name) { return put('/api/tags/' + id, { name: name }) },
+    deleteTag: function (id) { return del('/api/tags/' + id) },
+
+    getCategories: function () { return get('/api/categories', true) },
+    createCategory: function (name) { return post('/api/categories', { name: name }) },
+    updateCategory: function (id, name) { return put('/api/categories/' + id, { name: name }) },
+    deleteCategory: function (id) { return del('/api/categories/' + id) },
+
+    getPlatforms: function () { return get('/api/platforms', true) },
+    createPlatform: function (name) { return post('/api/platforms', { name: name }) },
+    updatePlatform: function (id, name) { return put('/api/platforms/' + id, { name: name }) },
+    deletePlatform: function (id) { return del('/api/platforms/' + id) },
+
+    getRecord: function (id) { return get('/api/records/' + id) },
+    getRecords: function (params) {
+      var qs = buildQS(params || {})
+      return get('/api/records?' + qs, true)
+    },
+    createRecord: function (data) { return post('/api/records', data) },
+    updateRecord: function (id, data) { return put('/api/records/' + id, data) },
+    deleteRecord: function (id) { return del('/api/records/' + id) },
+
+    parseVoice: async function (blob) {
+      showLoading()
+      try {
+        var form = new FormData()
+        form.append('file', blob, 'voice.mp3')
+        var voiceUrl = S.baseURL ? S.baseURL + '/api/records/voice' : '/api/records/voice'
+        var res = await fetch(voiceUrl, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + S.token },
+          body: form
+        })
+        var data = await res.json()
+        if (data.code === 0) return data.data
+        throw new Error(data.message || '识别失败')
+      } finally {
+        hideLoading()
+      }
+    },
+
+    getSummary: function (params) {
+      var qs = buildQS(params || {})
+      return get('/api/analysis/summary?' + qs)
+    }
+  }
+
+  function buildQS(params) {
+    return Object.entries(params)
+      .filter(function (e) { return e[1] !== '' && e[1] !== undefined && e[1] !== null })
+      .map(function (e) { return e[0] + '=' + encodeURIComponent(e[1]) })
+      .join('&')
+  }
+})()
+
+/* === js/router.js === */
+// hash 路由 + 全局工具函数
+window.__router = {
+  _current: '',
+  _pages: ['login', 'records', 'analysis', 'mine', 'record-edit', 'tags', 'categories', 'platforms'],
+  _tabPages: ['records', 'analysis', 'mine'],
+
+  init() {
+    var self = this
+    window.addEventListener('hashchange', function () { self._onChange() })
+    this._onChange()
+  },
+
+  go(path) {
+    location.hash = '#' + path
+  },
+
+  back() {
+    history.back()
+  },
+
+  _onChange() {
+    var raw = location.hash.replace('#/', '') || 'login'
+    var hash = raw.split('?')[0]  // 剥离查询参数
+    // 未登录强制回登录页
+    if (!__state.token && hash !== 'login') { this.go('login'); return }
+    // 已登录访问登录页则跳到明细
+    if (__state.token && hash === 'login') { this.go('records'); return }
+
+    this._current = hash
+    this._showPage(hash)
+    this._updateTabbar(hash)
+  },
+
+  _showPage(name) {
+    var self = this
+    this._pages.forEach(function (p) {
+      var el = document.getElementById('page-' + p)
+      if (el) {
+        if (p === name) { el.classList.add('active') }
+        else { el.classList.remove('active') }
+      }
+    })
+
+    var key = '__render_' + name.replace(/-/g, '_')
+    var renderFn = window[key]
+    if (renderFn) {
+      try { renderFn() } catch(e) {}
+    }
+  },
+
+  _updateTabbar(hash) {
+    var show = this._tabPages.indexOf(hash) >= 0
+    document.getElementById('tabbar').style.display = show ? '' : 'none'
+    document.querySelectorAll('.tab-item').forEach(function (el) {
+      el.classList.toggle('active', el.dataset.tab === hash)
+    })
+  }
+}
+
+// ========== 全局 UI 工具 ==========
+window.__ui = {
+  toast(msg, icon) {
+    var el = document.getElementById('toast')
+    el.textContent = msg
+    el.className = 'toast show' + (icon ? ' toast-' + icon : '')
+    clearTimeout(el._t)
+    el._t = setTimeout(function () { el.className = 'toast' }, 2000)
+  },
+
+  modal(title, content, btns) {
+    var el = document.getElementById('modal')
+    el.querySelector('.modal-title').textContent = title
+    el.querySelector('.modal-body').textContent = content
+    var btnsEl = el.querySelector('.modal-btns')
+    btnsEl.innerHTML = ''
+    ;(btns || [{ text: '确定', primary: true }]).forEach(function (b, i) {
+      var btn = document.createElement('button')
+      btn.textContent = b.text
+      btn.className = b.primary ? 'btn-primary' : 'btn-ghost'
+      btn.onclick = function () {
+        el.classList.remove('show')
+        if (b.onClick) b.onClick()
+      }
+      btnsEl.appendChild(btn)
+    })
+    el.classList.add('show')
+  },
+
+  loading(show) {
+    document.getElementById('loading').classList.toggle('show', show)
+  }
+}
+
+/* === js/components/voice-bubble.js === */
+// 语音悬浮球 —— MediaRecorder 替代 wx.getRecorderManager
+window.__renderVoiceBubble = function () {
+  var el = document.getElementById('voice-bubble-wrap')
+  if (!el) return
+
+  el.innerHTML = '<div class="voice-bubble" id="voice-bubble">🎤</div>'
+
+  var btn = document.getElementById('voice-bubble')
+  var recorder = null
+  var chunks = []
+  var _recStart = 0
+
+  btn.addEventListener('touchstart', function (e) { e.preventDefault(); startRecord() }, {passive: false})
+  btn.addEventListener('touchend', function (e) { e.preventDefault(); stopRecord() }, {passive: false})
+  btn.addEventListener('touchcancel', stopRecord)
+  // 桌面端
+  btn.addEventListener('mousedown', startRecord)
+  btn.addEventListener('mouseup', stopRecord)
+  btn.addEventListener('mouseleave', stopRecord)
+
+  function startRecord() {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var _mime = getMimeType()
+      try {
+        recorder = new MediaRecorder(stream, { mimeType: _mime })
+      } catch (e) {
+        recorder = new MediaRecorder(stream)
+        _mime = ''
+      }
+      chunks = []
+
+      recorder.ondataavailable = function (e) {
+        if (e.data.size > 0) chunks.push(e.data)
+      }
+
+      recorder.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop() })
+        btn.classList.remove('recording')
+        var blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : 'audio/mp3' })
+        var dur = Date.now() - _recStart
+        if (dur < 1500 || blob.size < 3000) { __ui.toast('录音太短，请按住说话至少2秒'); return }
+        processVoice(blob)
+      }
+
+      recorder.onerror = function () {
+        btn.classList.remove('recording')
+        __ui.toast('录音失败')
+      }
+
+      recorder.start()
+      _recStart = Date.now()
+      btn.classList.add('recording')
+    }).catch(function () {
+      __ui.toast('请允许麦克风权限')
+    })
+  }
+
+  function stopRecord() {
+    if (recorder && recorder.state === 'recording') {
+      recorder.stop()
+    }
+  }
+
+  function getMimeType() {
+    var types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/mpeg']
+    for (var i = 0; i < types.length; i++) {
+      if (MediaRecorder.isTypeSupported(types[i])) return types[i]
+    }
+    return ''
+  }
+
+  async function processVoice(blob) {
+    __ui.loading(true)
+    try {
+      var result = await __api.parseVoice(blob)
+      var S = __state
+
+      var tagIds = []
+      ;(result.tags || []).forEach(function (name) {
+        var found = (S.allTags || []).find(function (t) { return t.name === name })
+        if (found) tagIds.push(found.id)
+      })
+
+      var catId = null, catName = ''
+      if (result.category) {
+        var cats = await __api.getCategories()
+        var foundCat = (cats || []).find(function (c) { return c.name === result.category })
+        if (foundCat) { catId = foundCat.id; catName = foundCat.name }
+      }
+
+      var platId = null, platName = ''
+      if (result.platform) {
+        var plats = await __api.getPlatforms()
+        var foundPlat = (plats || []).find(function (p) { return p.name === result.platform })
+        if (foundPlat) { platId = foundPlat.id; platName = foundPlat.name }
+      }
+
+      __ui.loading(false)
+
+      S._voiceResult = {
+        type: result.type || 'expense',
+        amount: result.amount || 0,
+        date: result.date || today(),
+        note: result.note || '',
+        category_id: catId,
+        category: catId ? { id: catId, name: catName } : null,
+        platform_id: platId,
+        platform: platId ? { id: platId, name: platName } : null,
+        tag_ids: tagIds,
+        tags: tagIds.map(function (id) { return { id: id } }),
+        raw_text: result.raw_text || ''
+      }
+
+      __router.go('/record-edit?from=voice')
+    } catch (e) {
+      __ui.loading(false)
+      __ui.modal('语音识别失败', e.message || '请重试')
+    }
+  }
+
+  function today() {
+    var d = new Date()
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n }
+}
+
+/* === js/components/chart-canvas.js === */
+// Chart Canvas 组件 —— 原生 Canvas 2D（已内嵌到分析页，这里预留独立组件）
+window.__ChartCanvas = {
+  drawPie: function (canvas, data, colors) {
+    var ctx = canvas.getContext('2d')
+    var w = canvas.width, h = canvas.height
+    var total = data.reduce(function (s, d) { return s + d.value }, 0)
+    if (total === 0) return
+    var cx = w / 2, cy = h * 0.45, r = Math.min(cx, cy) - 10
+    var start = -Math.PI / 2
+    data.forEach(function (d, i) {
+      var slice = (d.value / total) * Math.PI * 2
+      ctx.beginPath()
+      ctx.moveTo(cx, cy)
+      ctx.arc(cx, cy, r, start, start + slice)
+      ctx.closePath()
+      ctx.fillStyle = (colors || [])[i % (colors || []).length] || '#ccc'
+      ctx.fill()
+      start += slice
+    })
+  }
+}
+
+/* === js/components/date-picker.js === */
+// 日期选择器组件
+window.__renderDatePicker = (function () {
+  var S = __state
+  var currentMonth = new Date().getFullYear() + '-' + pad(new Date().getMonth() + 1)
+  var pickingTarget = '' // 'start' or 'end'
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n }
+  function fmt(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) }
+
+  return function (containerId) {
+    containerId = containerId || 'date-picker-wrap'
+    var el = document.getElementById(containerId)
+    if (!el) return
+
+    var sd = S._startDate || ''
+    var ed = S._endDate || ''
+
+    el.innerHTML =
+      '<div class="date-picker">' +
+        '<div class="date-range-row">' +
+          '<button class="date-start-btn dp-start' + (sd ? ' has-value' : '') + '">' + (sd || '起始日') + '</button>' +
+          '<span class="date-arrow">→</span>' +
+          '<button class="date-end-btn dp-end' + (ed ? ' has-value' : '') + '">' + (ed || '结束日') + '</button>' +
+        '</div>' +
+        '<div class="date-presets">' +
+          '<span class="date-preset" data-range="7d">近7天</span>' +
+          '<span class="date-preset active" data-range="30d">近30天</span>' +
+          '<span class="date-preset" data-range="3m">近3月</span>' +
+        '</div>' +
+        '<div class="date-panel dp-panel"></div>' +
+      '</div>'
+
+    var startBtn = el.querySelector('.dp-start')
+    var endBtn = el.querySelector('.dp-end')
+    var panel = el.querySelector('.dp-panel')
+
+    startBtn.onclick = function () {
+      pickingTarget = 'start'
+      panel.classList.toggle('open')
+      if (panel.classList.contains('open')) renderCal(el, currentMonth)
+      else pickingTarget = ''
+    }
+    endBtn.onclick = function () {
+      pickingTarget = 'end'
+      panel.classList.toggle('open')
+      if (panel.classList.contains('open')) renderCal(el, currentMonth)
+      else pickingTarget = ''
+    }
+
+    el.querySelectorAll('.date-preset').forEach(function (p) {
+      p.onclick = function () {
+        el.querySelectorAll('.date-preset').forEach(function (x) { x.classList.remove('active') })
+        p.classList.add('active')
+        var range = p.dataset.range
+        var end = new Date()
+        var start = new Date()
+        if (range === '7d') start.setDate(end.getDate() - 7)
+        else if (range === '30d') start.setDate(end.getDate() - 30)
+        else start.setMonth(end.getMonth() - 3)
+        S._startDate = fmt(start); S._endDate = fmt(end)
+        updateBtns(el)
+        panel.classList.remove('open')
+        triggerChange(S._startDate, S._endDate)
+      }
+    })
+  }
+
+  function updateBtns(el) {
+    var sd = S._startDate || ''
+    var ed = S._endDate || ''
+    var sb = el.querySelector('.dp-start')
+    var eb = el.querySelector('.dp-end')
+    sb.textContent = sd || '起始日'
+    eb.textContent = ed || '结束日'
+    sb.classList.toggle('has-value', !!sd)
+    eb.classList.toggle('has-value', !!ed)
+  }
+
+  function renderCal(container, month) {
+    var panel = container.querySelector('.dp-panel')
+    var parts = month.split('-')
+    var y = parseInt(parts[0]), m = parseInt(parts[1])
+    var firstDay = new Date(y, m - 1, 1).getDay()
+    var daysInMonth = new Date(y, m, 0).getDate()
+
+    var ym = y + '年' + m + '月'
+    var html =
+      '<div class="cal-nav">' +
+        '<button class="cal-prev">‹</button>' +
+        '<span class="cal-month-label">' + ym + '</span>' +
+        '<button class="cal-next">›</button>' +
+      '</div>' +
+      '<div class="cal-weekdays">' +
+        '<span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>' +
+      '</div>' +
+      '<div class="cal-days">'
+
+    for (var i = 0; i < firstDay; i++) html += '<span class="cal-day other"></span>'
+    for (var d = 1; d <= daysInMonth; d++) {
+      var ds = y + '-' + pad(m) + '-' + pad(d)
+      var cls = 'cal-day'
+      if (ds === S._startDate || ds === S._endDate) cls += ' selected'
+      html += '<span class="' + cls + '" data-date="' + ds + '">' + d + '</span>'
+    }
+    html += '</div>'
+    panel.innerHTML = html
+
+    panel.querySelector('.cal-prev').onclick = function () {
+      m--; if (m < 1) { m = 12; y-- }
+      currentMonth = y + '-' + pad(m)
+      renderCal(container, currentMonth)
+    }
+    panel.querySelector('.cal-next').onclick = function () {
+      m++; if (m > 12) { m = 1; y++ }
+      currentMonth = y + '-' + pad(m)
+      renderCal(container, currentMonth)
+    }
+
+    panel.querySelectorAll('.cal-day:not(.other)').forEach(function (day) {
+      day.onclick = function () {
+        var d = day.dataset.date
+        if (pickingTarget === 'start') {
+          S._startDate = d
+          if (S._endDate && S._endDate < d) S._endDate = ''
+        } else if (pickingTarget === 'end') {
+          S._endDate = d
+          if (S._startDate && S._startDate > d) S._startDate = ''
+        }
+        updateBtns(container)
+        panel.classList.remove('open')
+        pickingTarget = ''
+        triggerChange(S._startDate, S._endDate)
+      }
+    })
+  }
+
+  function triggerChange(s, e) {
+    var fn = window.__router._current === 'analysis' ? onAnalysisDateChange : onRecordsDateChange
+    if (typeof fn === 'function') fn(s, e)
+  }
+})()
+
+/* === js/pages/login.js === */
+// 登录页
+window.__render_login = function () {
+  var S = __state, el = document.getElementById('page-login')
+  var showServer = !S.baseURL
+
+  el.innerHTML =
+    '<div class="login-page">' +
+      '<div class="ambient-orb orb-top"></div>' +
+      '<div class="ambient-orb orb-bottom"></div>' +
+      '<div class="login-card card">' +
+        '<div class="brand">' +
+          '<span class="brand-icon">🌿</span>' +
+          '<span class="brand-name">轻记账</span>' +
+          '<span class="brand-desc">极简 · 私人 · 专注</span>' +
+        '</div>' +
+        '<input id="login-account" class="login-input-n" type="text" placeholder="输入账号" autofocus>' +
+        '<button id="login-btn" class="btn-primary">进入</button>' +
+        '<div class="login-hint">账号由管理员创建，请联系开通</div>' +
+        '<div class="login-server-bottom">' +
+          (showServer
+            ? '<div class="server-edit-row" id="login-server-row">' +
+                '<span class="server-edit-label">服务器</span>' +
+                '<input id="login-server" class="login-server-input" type="text" placeholder="http://服务器IP:端口" value="' + esc(S.baseURL) + '">' +
+              '</div>'
+            : '<div class="server-cached-row">' +
+                '<span class="server-label">服务器</span>' +
+                '<span class="server-val">' + esc(S.baseURL) + '</span>' +
+                '<span class="server-edit" id="login-toggle-server">修改</span>' +
+              '</div>') +
+        '</div>' +
+      '</div>' +
+    '</div>'
+
+  document.getElementById('login-btn').onclick = doLogin
+  var tgl = document.getElementById('login-toggle-server')
+  if (tgl) tgl.onclick = function () {
+    var input = document.createElement('input')
+    input.type = 'text'
+    input.id = 'login-server'
+    input.className = 'login-server-input'
+    input.value = S.baseURL || ''
+    input.placeholder = 'http://服务器IP:端口'
+    tgl.parentElement.outerHTML = '<div class="server-edit-row" id="login-server-row"><span class="server-edit-label">服务器</span></div>'
+    document.getElementById('login-server-row').appendChild(input)
+    input.focus()
+  }
+}
+
+function doLogin() {
+  var account = document.getElementById('login-account').value.trim()
+  if (!account) return
+
+  var serverEl = document.getElementById('login-server')
+  var url = (serverEl ? serverEl.value : __state.baseURL || '').trim().replace(/\/+$/, '')
+  // 有值则保存，空值表示同源部署（reverse proxy）
+  __state.baseURL = url
+  if (url) __state.save()
+
+  __api.login(account).then(function (data) {
+    __state.token = data.token
+    __state.account = account
+    __state.save()
+    return __api.getTags()
+  }).then(function () {
+    __router.go('/records')
+  }).catch(function (e) {
+    __ui.toast(e.message || '登录失败')
+  })
+}
+
+function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
+
+/* === js/pages/records.js === */
+// 明细页
+window.__render_records = function () {
+  var el = document.getElementById('page-records')
+  var S = __state
+  var now = new Date()
+  var y = now.getFullYear()
+  var m = pad(now.getMonth() + 1)
+  var today = y + '-' + m + '-' + pad(now.getDate())
+
+  if (!S._startDate) {
+    S._startDate = y + '-' + m + '-01'
+    S._endDate = today
+  }
+
+  el.innerHTML =
+    '<div class="ambient-orb orb-top"></div>' +
+    '<div id="date-picker-wrap"></div>' +
+    '<div class="add-bar"><div class="add-btn" id="btn-add-record">+ 记一笔</div></div>' +
+    '<div class="summary-card card"><div class="summary-row">' +
+      '<div class="summary-item"><span class="summary-label">收入</span><span class="summary-value income" id="sum-income">0.00</span></div>' +
+      '<div class="summary-divider"></div>' +
+      '<div class="summary-item"><span class="summary-label">支出</span><span class="summary-value expense" id="sum-expense">0.00</span></div>' +
+      '<div class="summary-divider"></div>' +
+      '<div class="summary-item"><span class="summary-label">结余</span><span class="summary-value" id="sum-net">0.00</span></div>' +
+    '</div></div>' +
+    '<div class="record-scroll" id="record-list"></div>' +
+    '<div id="voice-bubble-wrap"></div>'
+
+  document.getElementById('btn-add-record').onclick = function () { __router.go('/record-edit') }
+  __renderDatePicker()
+  __renderVoiceBubble()
+  loadRecords()
+}
+
+function loadRecords(params) {
+  params = params || {}
+  var S = __state
+
+  __api.getRecords({
+    start_date: params.startDate || S._startDate || '',
+    end_date: params.endDate || S._endDate || '',
+    page: 1,
+    page_size: 200
+  }).then(function (data) {
+    S.allRecords = (data.list || []).map(function (r) {
+      r._sign = r.type === 'income' ? '+' : '-'
+      r._amountStr = Number(r.amount).toFixed(2)
+      var d = r.date.split('T')[0].split('-')
+      r._dateStr = d[1] + '/' + d[2]
+      r._tagsStr = (r.tags || []).map(function (t) { return t.name }).join(',')
+      r._catName = r.category ? r.category.name : ''
+      r._platName = r.platform ? r.platform.name : ''
+      return r
+    })
+    renderRecords(S.allRecords)
+    renderSummary(S.allRecords)
+  }).catch(function (e) {
+    __ui.modal('加载失败', e.message || '网络异常')
+  })
+}
+
+function renderRecords(list) {
+  var html = ''
+  if (!list || list.length === 0) {
+    html = '<div class="empty-state"><span class="empty-icon">☁️</span><span class="empty-text">暂无记录</span><span class="empty-hint">点击「+ 记一笔」快速记账</span></div>'
+  } else {
+    list.forEach(function (r) {
+      var tagsHtml = ''
+      if (r._catName) tagsHtml += '<span class="meta-pill meta-cat">' + esc(r._catName) + '</span>'
+      if (r._platName) tagsHtml += '<span class="meta-pill meta-plat">' + esc(r._platName) + '</span>'
+      if (r._tagsStr) r._tagsStr.split(',').forEach(function (t) {
+        if (t) tagsHtml += '<span class="tag-pill">' + esc(t) + '</span>'
+      })
+      if (!tagsHtml) tagsHtml = '<span class="tag-pill tag-empty">未标记</span>'
+
+      html +=
+        '<div class="record-item card" data-id="' + r.id + '">' +
+          '<div class="record-left">' +
+            '<div class="record-meta">' + tagsHtml + '</div>' +
+            '<div class="record-date">' + r._dateStr + ' · ' + esc(r.note || '无备注') + '</div>' +
+          '</div>' +
+          '<div class="record-right ' + r.type + '">' + r._sign + r._amountStr + '</div>' +
+        '</div>'
+    })
+  }
+  document.getElementById('record-list').innerHTML = html
+
+  // 点击编辑
+  document.querySelectorAll('#record-list .record-item').forEach(function (el) {
+    el.onclick = function () { __router.go('/record-edit?id=' + el.dataset.id) }
+  })
+}
+
+function renderSummary(list) {
+  var income = 0, expense = 0
+  list.forEach(function (r) {
+    if (r.type === 'income') income += r.amount; else expense += r.amount
+  })
+  document.getElementById('sum-income').textContent = income.toFixed(2)
+  document.getElementById('sum-expense').textContent = expense.toFixed(2)
+  document.getElementById('sum-net').textContent = (income - expense).toFixed(2)
+}
+
+function onRecordsDateChange(startDate, endDate) {
+  __state._startDate = startDate
+  __state._endDate = endDate
+  loadRecords({ startDate: startDate, endDate: endDate })
+}
+
+/* === js/pages/analysis.js === */
+// 统计页
+var __analysisState = { type: 'all', chart: 'category', granularity: 'auto' }
+
+window.__render_analysis = function () {
+  var el = document.getElementById('page-analysis')
+  var S = __state
+
+  // 默认近30天
+  if (!S._startDate || !S._endDate) {
+    var end = new Date(), start = new Date()
+    start.setDate(end.getDate() - 30)
+    function fd(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) }
+    S._startDate = fd(start); S._endDate = fd(end)
+  }
+
+  el.innerHTML =
+    '<div class="filter-card card">' +
+      '<div id="analysis-dp-wrap"></div>' +
+      '<div class="seg-group"><span class="seg-label">收支分类</span>' +
+        '<div class="seg-btns" id="seg-type">' +
+          '<span class="seg-btn active" data-v="all">全部</span>' +
+          '<span class="seg-btn" data-v="income">收入</span>' +
+          '<span class="seg-btn" data-v="expense">支出</span>' +
+        '</div></div>' +
+      '<div class="seg-group"><span class="seg-label">图表类型</span>' +
+        '<div class="seg-btns" id="seg-chart">' +
+          '<span class="seg-btn" data-v="trend">趋势</span>' +
+          '<span class="seg-btn active" data-v="category">类别</span>' +
+          '<span class="seg-btn" data-v="platform">平台</span>' +
+          '<span class="seg-btn" data-v="tag">标签</span>' +
+        '</div></div>' +
+      '<div class="seg-group"><span class="seg-label">时间粒度</span>' +
+        '<div class="seg-btns" id="seg-granularity">' +
+          '<span class="seg-btn active" data-v="auto">自动</span>' +
+          '<span class="seg-btn" data-v="day">日</span>' +
+          '<span class="seg-btn" data-v="week">周</span>' +
+          '<span class="seg-btn" data-v="month">月</span>' +
+          '<span class="seg-btn" data-v="year">年</span>' +
+        '</div></div>' +
+    '</div>' +
+    '<div class="kpi-card card">' +
+      '<div class="kpi-row">' +
+        '<div class="kpi-item"><div class="kpi-label">收入</div><div class="kpi-value income" id="kpi-income">--</div></div>' +
+        '<div class="kpi-divider"></div>' +
+        '<div class="kpi-item"><div class="kpi-label">支出</div><div class="kpi-value expense" id="kpi-expense">--</div></div>' +
+        '<div class="kpi-divider"></div>' +
+        '<div class="kpi-item"><div class="kpi-label">结余</div><div class="kpi-value" id="kpi-net">--</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="chart-area" id="chart-area">' +
+      '<div class="chart-loading"><span class="spin"></span>数据加载中</div>' +
+    '</div>'
+
+  __renderDatePicker('analysis-dp-wrap')
+
+  // 绑定分段选择器
+  bindSeg('seg-type', 'type')
+  bindSeg('seg-chart', 'chart')
+  bindSeg('seg-granularity', 'granularity')
+
+  loadAnalysis()
+}
+
+function bindSeg(id, key) {
+  var el = document.getElementById(id)
+  if (!el) return
+  el.querySelectorAll('.seg-btn').forEach(function (btn) {
+    btn.onclick = function () {
+      el.querySelectorAll('.seg-btn').forEach(function (x) { x.classList.remove('active') })
+      btn.classList.add('active')
+      __analysisState[key] = btn.dataset.v
+      loadAnalysis()
+    }
+  })
+}
+
+function loadAnalysis(params) {
+  params = params || {}
+  var S = __state
+  var st = __analysisState
+
+  var ca = document.getElementById('chart-area')
+  if (ca) ca.innerHTML = '<div class="chart-loading"><span class="spin"></span>数据加载中</div>'
+
+  var sd = params.startDate || S._startDate || ''
+  var ed = params.endDate || S._endDate || ''
+
+  // 先拿汇总数据（KPI + 饼图用）
+  __api.getSummary({ start_date: sd, end_date: ed }).then(function (data) {
+    var income = data.total_income || 0
+    var expense = data.total_expense || 0
+    document.getElementById('kpi-income').textContent = '¥' + income.toFixed(2)
+    document.getElementById('kpi-expense').textContent = '¥' + expense.toFixed(2)
+    document.getElementById('kpi-net').textContent = '¥' + (income - expense).toFixed(2)
+
+    if (st.chart === 'trend') {
+      // 趋势图用原始记录聚合
+      loadTrendChart(sd, ed, st.type)
+    } else {
+      // 饼图也用原始记录聚合（按类目/平台/标签 + 收支分开）
+      loadPieChart(sd, ed, st.chart, st.type)
+    }
+  }).catch(function (e) {
+    if (ca) ca.innerHTML = '<div class="chart-loading" style="color:var(--expense)">加载失败: ' + (e.message || '网络异常') + '</div>'
+  })
+}
+
+function onAnalysisDateChange(startDate, endDate) {
+  __state._startDate = startDate
+  __state._endDate = endDate
+  loadAnalysis({ startDate: startDate, endDate: endDate })
+}
+
+// ====== 趋势图：拉原始记录按天聚合 ======
+function loadTrendChart(sd, ed, type) {
+  var ca = document.getElementById('chart-area')
+  __api.getRecords({ start_date: sd, end_date: ed, page: 1, page_size: 500 }).then(function (data) {
+    var recs = data.list || []
+    var byDayInc = {}, byDayExp = {}
+    recs.forEach(function (r) {
+      var d = r.date.substring(0, 10)
+      if (r.type === 'income') byDayInc[d] = (byDayInc[d] || 0) + r.amount
+      else byDayExp[d] = (byDayExp[d] || 0) + r.amount
+    })
+    var allKeys = Object.keys(byDayInc).concat(Object.keys(byDayExp))
+    allKeys.sort()
+    // 去重
+    var dates = []
+    allKeys.forEach(function (k) { if (dates.indexOf(k) < 0) dates.push(k) })
+
+    var incData = dates.map(function (d) { return { date: d, amount: byDayInc[d] || 0 } })
+    var expData = dates.map(function (d) { return { date: d, amount: byDayExp[d] || 0 } })
+
+    drawTrendChart(ca, incData, expData, type)
+  }).catch(function (e) {
+    if (ca) ca.innerHTML = '<div class="chart-loading" style="color:var(--expense)">加载失败: ' + (e.message || '网络异常') + '</div>'
+  })
+}
+
+// ====== 绘制趋势折线图 ======
+function drawTrendChart(ca, incData, expData, type) {
+  if (!ca) return
+  var showInc = (type === 'all' || type === 'income')
+  var showExp = (type === 'all' || type === 'expense')
+
+  var w = ca.clientWidth
+  if (w < 100) w = 340
+  w = w - 8
+  var h = 300, dpr = window.devicePixelRatio || 1
+
+  ca.innerHTML = '<canvas id="analysis-canvas"></canvas>'
+  var canvas = document.getElementById('analysis-canvas')
+  var ctx = canvas.getContext('2d')
+  canvas.width = w * dpr; canvas.height = h * dpr
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px'
+  ctx.scale(dpr, dpr)
+
+  var padL = 55, padR = 16, padT = 16, padB = 42
+  var pw = w - padL - padR, ph = h - padT - padB
+
+  // 计算 Y 轴范围
+  var allVals = []
+  if (showInc) incData.forEach(function (it) { allVals.push(it.amount) })
+  if (showExp) expData.forEach(function (it) { allVals.push(it.amount) })
+  var maxVal = Math.max.apply(null, allVals) || 1
+  var yTicks = 3, yStep = maxVal / yTicks
+
+  // Y 轴刻度
+  ctx.fillStyle = '#B5B3B0'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right'
+  for (var t = 0; t <= yTicks; t++) {
+    var yv = Math.round(yStep * t)
+    var yy = padT + (1 - t / yTicks) * ph
+    ctx.fillText('¥' + yv, padL - 6, yy + 4)
+  }
+
+  // 纵轴
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + ph); ctx.stroke()
+  // 横轴
+  ctx.beginPath(); ctx.moveTo(padL, padT + ph); ctx.lineTo(padL + pw, padT + ph); ctx.stroke()
+
+  // X 轴标签（日期 MM-DD）
+  var xStep = Math.max(1, Math.ceil(Math.max(incData.length, expData.length) / 6))
+  var labelData = incData.length >= expData.length ? incData : expData
+  ctx.fillStyle = '#B5B3B0'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'
+  labelData.forEach(function (it, i) {
+    if (i % xStep === 0 || i === labelData.length - 1) {
+      var xl = padL + (i / Math.max(labelData.length - 1, 1)) * pw
+      var label = (it.date || '').substring(5)
+      ctx.fillText(label, xl, padT + ph + 16)
+    }
+  })
+
+  // 画线函数
+  function drawLine(data, color) {
+    var pts = []
+    data.forEach(function (it, i) {
+      var x = padL + (i / Math.max(data.length - 1, 1)) * pw
+      var y = padT + (1 - (it.amount || 0) / maxVal) * ph
+      pts.push({ x: x, y: y, amount: it.amount })
+    })
+    if (pts.length === 0) return
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round'
+    ctx.beginPath()
+    pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y) })
+    ctx.stroke()
+    // 数据点
+    ctx.fillStyle = color
+    pts.forEach(function (p, i) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill()
+      if (i % 2 === 0 || i === pts.length - 1) {
+        // 不显示数字
+      }
+    })
+    return pts
+  }
+
+  if (showInc) drawLine(incData, '#B6B8A5')
+  if (showExp) drawLine(expData, '#D6A5A5')
+
+  // 图例
+  var ly = padT + ph + 28
+  if (showInc) { ctx.fillStyle = '#B6B8A5'; ctx.fillRect(padL + 4, ly, 8, 8); ctx.fillStyle = '#6B6A67'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left'; ctx.fillText('收入', padL + 16, ly + 8); ly += 18 }
+  if (showExp) { ctx.fillStyle = '#D6A5A5'; ctx.fillRect(padL + 4, ly, 8, 8); ctx.fillStyle = '#6B6A67'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left'; ctx.fillText('支出', padL + 16, ly + 8) }
+}
+
+// ====== 饼图：拉原始记录按维度聚合 ======
+function loadPieChart(sd, ed, dimension, type) {
+  var ca = document.getElementById('chart-area')
+  __api.getRecords({ start_date: sd, end_date: ed, page: 1, page_size: 500 }).then(function (data) {
+    var recs = data.list || []
+    var incMap = {}, expMap = {}
+    recs.forEach(function (r) {
+      var key = ''
+      if (dimension === 'platform') {
+        key = (r.platform && r.platform.name) ? r.platform.name : '未标记'
+      } else if (dimension === 'tag') {
+        key = (r.tags && r.tags.length) ? r.tags.map(function (t) { return t.name }).join(',') : '未标记'
+      } else {
+        key = (r.category && r.category.name) ? r.category.name : '未分类'
+      }
+      if (r.type === 'income') incMap[key] = (incMap[key] || 0) + r.amount
+      else expMap[key] = (expMap[key] || 0) + r.amount
+    })
+    var incItems = Object.keys(incMap).map(function (k) { return { name: k, amount: incMap[k] } }).sort(function(a,b){return b.amount-a.amount})
+    var expItems = Object.keys(expMap).map(function (k) { return { name: k, amount: expMap[k] } }).sort(function(a,b){return b.amount-a.amount})
+
+    if (type === 'income') expItems = []
+    else if (type === 'expense') incItems = []
+
+    drawPieCharts(ca, incItems, expItems)
+  }).catch(function (e) {
+    if (ca) ca.innerHTML = '<div class="chart-loading" style="color:var(--expense)">加载失败: ' + (e.message || '网络异常') + '</div>'
+  })
+}
+
+// ====== 绘制饼图（支持双图） ======
+function drawPieCharts(ca, incItems, expItems) {
+  if (!ca) return
+
+  if (!incItems.length && !expItems.length) {
+    ca.innerHTML = '<div class="chart-loading">暂无数据</div>'
+    return
+  }
+
+  var w = ca.clientWidth
+  if (w < 100) w = 340
+  w = w - 8
+  var dpr = window.devicePixelRatio || 1
+  var colors = ['#A6B1C2','#D6A5A5','#D9C9B5','#B6B8A5','#B9A8BC','#8F9BB3','#C28E8E','#C4B4A1','#9DA08D','#A390A5']
+
+  var rows = Math.max(
+    incItems.length ? Math.ceil(incItems.length / 2) : 0,
+    expItems.length ? Math.ceil(expItems.length / 2) : 0
+  )
+  var h = (incItems.length && expItems.length ? 280 : 200) + rows * 22
+
+  ca.innerHTML = '<canvas id="analysis-canvas"></canvas>'
+  var canvas = document.getElementById('analysis-canvas')
+  var ctx = canvas.getContext('2d')
+  canvas.width = w * dpr; canvas.height = h * dpr
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px'
+  ctx.scale(dpr, dpr)
+
+  var both = incItems.length && expItems.length
+  var halfW = both ? w / 2 : w
+
+  if (incItems.length) drawOnePie(ctx, incItems, 0, halfW, both ? 1 : 2, '收入', colors)
+  if (expItems.length) drawOnePie(ctx, expItems, both ? halfW : 0, halfW, both ? 1 : 2, '支出', colors)
+}
+
+function drawOnePie(ctx, items, offsetX, areaW, cols, title, colors) {
+  var total = items.reduce(function (s, it) { return s + (it.amount || 0) }, 0)
+  if (total === 0) return
+
+  var cx = offsetX + areaW / 2, cy = 80, r = Math.min(areaW, 170) / 2.8
+  var start = -Math.PI / 2
+  items.forEach(function (it, i) {
+    var slice = ((it.amount || 0) / total) * Math.PI * 2
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, start + slice); ctx.closePath()
+    ctx.fillStyle = colors[i % colors.length]; ctx.fill()
+    start += slice
+  })
+  // 中心
+  ctx.fillStyle = '#4A4946'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'
+  ctx.fillText(title, cx, cy - 2)
+  ctx.fillStyle = '#B5B3B0'; ctx.font = '10px sans-serif'
+  ctx.fillText('¥' + total.toFixed(0), cx, cy + 12)
+
+  // 图例
+  var legendY = 170, colW = ((areaW - 8) / cols)
+  items.forEach(function (it, i) {
+    var col = i % cols, row = Math.floor(i / cols)
+    var bx = offsetX + 6 + col * colW, by = legendY + row * 20
+    ctx.fillStyle = colors[i % colors.length]; ctx.fillRect(bx, by, 8, 8)
+    ctx.fillStyle = '#4A4946'; ctx.font = '10px sans-serif'; ctx.textAlign = 'left'
+    var label = it.name + ' ¥' + (it.amount || 0).toFixed(0)
+    if (label.length > 14) label = label.substring(0, 13) + '…'
+    ctx.fillText(label, bx + 12, by + 8)
+  })
+}
+
+/* === js/pages/record-edit.js === */
+// 记录编辑页
+window.__render_record_edit = function () {
+  var S = __state, el = document.getElementById('page-record-edit')
+  var id = getParam('id')
+  var fromVoice = getParam('from') === 'voice'
+
+  var record = { type: 'expense', date: today(), amount: '', note: '' }
+  if (id) {
+    var found = S.allRecords.find(function (r) { return r.id == id })
+    if (found) record = found
+  } else if (fromVoice && S._voiceResult) {
+    record = S._voiceResult
+    S._voiceResult = null
+  }
+
+  el.innerHTML =
+    '<div class="page-header">' +
+      '<span class="edit-back" id="edit-back">‹</span>' +
+      '<span class="page-title">' + (id ? '编辑记录' : '记一笔') + '</span>' +
+      (id ? '<button class="btn-danger" id="edit-delete">删除</button>' : '') +
+    '</div>' +
+
+    '<div class="form-group"><label class="form-label">类型</label>' +
+      '<div class="type-switch">' +
+        '<button class="type-btn ' + (record.type === 'expense' ? 'active-expense' : '') + '" data-type="expense">支出</button>' +
+        '<button class="type-btn ' + (record.type === 'income' ? 'active-income' : '') + '" data-type="income">收入</button>' +
+      '</div></div>' +
+
+    '<div class="form-group"><label class="form-label">金额</label>' +
+      '<input class="input" id="edit-amount" type="number" step="0.01" placeholder="0.00" value="' + (record.amount || '') + '"></div>' +
+
+    '<div class="form-row">' +
+      '<div class="form-group"><label class="form-label">日期</label><input class="input" id="edit-date" type="date" value="' + formatDate(record.date) + '"></div>' +
+    '</div>' +
+
+    '<div class="form-group"><label class="form-label">备注</label><input class="input" id="edit-note" placeholder="选填" value="' + esc(record.note || '') + '"></div>' +
+
+    '<div class="form-group"><label class="form-label">类目</label><select class="input" id="edit-category"></select></div>' +
+    '<div class="form-group"><label class="form-label">平台</label><select class="input" id="edit-platform"></select></div>' +
+    '<div class="form-group"><label class="form-label">标签</label><div id="edit-tags" class="tag-chips"></div></div>' +
+
+    (record.raw_text ? '<div class="voice-raw-text">原文: ' + esc(record.raw_text) + '</div>' : '') +
+
+    '<button class="btn-primary" id="edit-save" style="margin-top:20px">保存</button>'
+
+  document.getElementById('edit-back').onclick = function () { history.back() }
+  if (id) document.getElementById('edit-delete').onclick = function () { deleteRecord(id) }
+
+  document.querySelectorAll('.type-btn').forEach(function (btn) {
+    btn.onclick = function () { record.type = btn.dataset.type; renderTypeBtns(record.type) }
+  })
+
+  loadSelects(record)
+  document.getElementById('edit-save').onclick = function () { saveRecord(record, id) }
+}
+
+function renderTypeBtns(type) {
+  document.querySelectorAll('.type-btn').forEach(function (btn) {
+    btn.className = 'type-btn'
+    if (btn.dataset.type === type) btn.classList.add('active-' + type)
+  })
+}
+
+function loadSelects(record) {
+  Promise.all([__api.getCategories(), __api.getPlatforms(), __api.getTags()]).then(function (r) {
+    var cats = r[0] || [], plats = r[1] || [], tags = r[2] || []
+    fillSelect('edit-category', cats, record.category_id || (record.category ? record.category.id : null), '类目')
+    fillSelect('edit-platform', plats, record.platform_id || (record.platform ? record.platform.id : null), '平台')
+    renderTagChips(tags, record.tag_ids || (record.tags || []).map(function (t) { return t.id }))
+  }).catch(function () {})
+}
+
+function fillSelect(id, items, val, placeholder) {
+  var s = '<option value="">-- ' + placeholder + ' --</option>'
+  items.forEach(function (it) {
+    s += '<option value="' + it.id + '"' + (val == it.id ? ' selected' : '') + '>' + esc(it.name) + '</option>'
+  })
+  document.getElementById(id).innerHTML = s
+}
+
+function renderTagChips(all, selected) {
+  var el = document.getElementById('edit-tags')
+  el.innerHTML = ''
+  all.forEach(function (t) {
+    var chip = document.createElement('span')
+    chip.textContent = t.name
+    chip.className = 'tag-chip'
+    if (selected.indexOf(t.id) >= 0) chip.classList.add('active')
+    chip.onclick = function () {
+      var idx = selected.indexOf(t.id)
+      if (idx >= 0) selected.splice(idx, 1); else selected.push(t.id)
+      chip.classList.toggle('active')
+    }
+    el.appendChild(chip)
+  })
+}
+
+function saveRecord(record, id) {
+  var body = {
+    type: record.type,
+    amount: parseFloat(document.getElementById('edit-amount').value) || 0,
+    date: document.getElementById('edit-date').value,
+    note: document.getElementById('edit-note').value.trim(),
+    category_id: nullVal(document.getElementById('edit-category').value),
+    platform_id: nullVal(document.getElementById('edit-platform').value),
+    tag_ids: []
+  }
+
+  document.querySelectorAll('#edit-tags .tag-chip.active').forEach(function (el) {
+    var name = el.textContent
+    var t = __state.allTags.find(function (x) { return x.name === name })
+    if (t) body.tag_ids.push(t.id)
+  })
+
+  if (!body.amount || !body.date) { __ui.toast('金额和日期必填'); return }
+
+  __ui.loading(true)
+  var promise = id ? __api.updateRecord(id, body) : __api.createRecord(body)
+  promise.then(function () {
+    __ui.loading(false)
+    __router.back()
+  }).catch(function (e) {
+    __ui.loading(false)
+    __ui.toast(e.message || '保存失败')
+  })
+}
+
+function deleteRecord(id) {
+  __ui.modal('删除确认', '确定要删除这条记录？', [
+    { text: '取消', onClick: function () {} },
+    { text: '删除', primary: true, onClick: function () {
+      __api.deleteRecord(id).then(function () { __router.back() }).catch(function (e) { __ui.toast(e.message) })
+    }}
+  ])
+}
+
+function formatDate(val) {
+  if (!val) return today()
+  return (typeof val === 'string' ? val : val.split('T')[0]).substring(0, 10)
+}
+
+function nullVal(v) { return v ? parseInt(v) : null }
+
+function getParam(name) {
+  var match = location.hash.match(new RegExp('[?&]' + name + '=([^&]*)'))
+  return match ? decodeURIComponent(match[1]) : null
+}
+
+function today() {
+  var d = new Date()
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+}
+
+function pad(n) { return n < 10 ? '0' + n : '' + n }
+
+/* === js/pages/mine.js === */
+// 我的页
+window.__render_mine = function () {
+  var S = __state, el = document.getElementById('page-mine')
+
+  el.innerHTML =
+    '<div class="mine-header">' +
+      '<div class="mine-avatar">👤</div>' +
+      '<div class="mine-account">' + esc(S.account) + '</div>' +
+    '</div>' +
+
+    '<div class="mine-menu">' +
+      '<div class="mine-menu-item" id="mine-tags"><span>标签管理</span><span class="menu-arrow">›</span></div>' +
+      '<div class="mine-menu-item" id="mine-categories"><span>类目管理</span><span class="menu-arrow">›</span></div>' +
+      '<div class="mine-menu-item" id="mine-platforms"><span>平台管理</span><span class="menu-arrow">›</span></div>' +
+      '<div class="mine-menu-item" id="mine-server">' +
+        '<span>服务器</span>' +
+        '<span class="menu-val">' + esc(S.baseURL || '未配置') + '</span>' +
+      '</div>' +
+    '</div>' +
+
+    '<button class="logout-btn" id="btn-logout">退出登录</button>'
+
+  document.getElementById('mine-tags').onclick = function () { __router.go('/tags') }
+  document.getElementById('mine-categories').onclick = function () { __router.go('/categories') }
+  document.getElementById('mine-platforms').onclick = function () { __router.go('/platforms') }
+
+  document.getElementById('mine-server').onclick = function () {
+    var input = document.createElement('input')
+    input.type = 'text'
+    input.value = S.baseURL || ''
+    input.placeholder = 'http://服务器IP:端口'
+    input.style.cssText = 'width:100%;padding:10px;font-size:14px;border:1px solid #ddd;border-radius:8px;margin-top:8px'
+
+    __ui.modal('服务器地址', '', [
+      { text: '取消', onClick: function () {} },
+      { text: '保存', primary: true, onClick: function () {
+        var url = input.value.trim().replace(/\/+$/, '')
+        if (url) { S.baseURL = url; S.save(); __router.go('/mine') }
+      }}
+    ])
+    document.querySelector('.modal-body').appendChild(input)
+    input.focus()
+  }
+
+  document.getElementById('btn-logout').onclick = function () {
+    __ui.modal('退出', '确定退出当前账号？', [
+      { text: '取消', onClick: function () {} },
+      { text: '退出', primary: true, onClick: function () {
+        S.clear(); __router.go('/login')
+      }}
+    ])
+  }
+}
+
+/* === js/pages/tags.js === */
+// 标签/类目/平台管理页（共用模板）
+function mgmtPage(name, apiList, apiCreate, apiUpdate, apiDelete) {
+  return function () {
+    var el = document.getElementById('page-' + name)
+    el.innerHTML =
+      '<div class="page-header">' +
+        '<span class="edit-back" onclick="history.back()">‹</span>' +
+        '<span class="page-title">' + nameMap(name) + '管理</span>' +
+      '</div>' +
+      '<div class="mgmt-add-row">' +
+        '<input class="input" id="mgmt-input" placeholder="输入名称">' +
+        '<button class="btn-sm" id="mgmt-add">添加</button>' +
+      '</div>' +
+      '<div id="mgmt-list"></div>'
+
+    document.getElementById('mgmt-add').onclick = function () {
+      var val = document.getElementById('mgmt-input').value.trim()
+      if (!val) { __ui.toast('请输入名称'); return }
+      apiCreate(val).then(function () {
+        document.getElementById('mgmt-input').value = ''
+        load()
+      }).catch(function (e) { __ui.toast(e.message) })
+    }
+
+    function load() {
+      apiList().then(function (data) {
+        var html = ''
+        ;(data || []).forEach(function (it) {
+          html +=
+            '<div class="mgmt-list-item">' +
+              '<span class="mgmt-name">' + esc(it.name) + '</span>' +
+              '<div class="mgmt-actions">' +
+                '<button class="btn-sm edit-btn" data-id="' + it.id + '" data-name="' + esc(it.name) + '">编辑</button>' +
+                '<button class="btn-danger del-btn" data-id="' + it.id + '">删除</button>' +
+              '</div>' +
+            '</div>'
+        })
+        document.getElementById('mgmt-list').innerHTML = html || '<div class="empty-state"><span class="empty-text">暂无' + nameMap(name) + '</span></div>'
+
+        document.querySelectorAll('#mgmt-list .edit-btn').forEach(function (btn) {
+          btn.onclick = function () {
+            var id = btn.dataset.id, old = btn.dataset.name
+            var input = document.createElement('input')
+            input.type = 'text'; input.value = old
+            input.style.cssText = 'width:100%;padding:10px;font-size:14px;border:1px solid #ddd;border-radius:8px;margin-top:8px'
+            __ui.modal('编辑' + nameMap(name), '', [
+              { text: '取消', onClick: function () {} },
+              { text: '保存', primary: true, onClick: function () {
+                var nv = input.value.trim()
+                if (!nv) return
+                apiUpdate(parseInt(id), nv).then(load).catch(function (e) { __ui.toast(e.message) })
+              }}
+            ])
+            document.querySelector('.modal-body').appendChild(input)
+            input.focus()
+          }
+        })
+
+        document.querySelectorAll('#mgmt-list .del-btn').forEach(function (btn) {
+          btn.onclick = function () {
+            var id = parseInt(btn.dataset.id)
+            __ui.modal('确认删除', '', [
+              { text: '取消', onClick: function () {} },
+              { text: '删除', primary: true, onClick: function () {
+                apiDelete(id).then(load).catch(function (e) { __ui.toast(e.message) })
+              }}
+            ])
+          }
+        })
+      }).catch(function (e) { __ui.toast(e.message) })
+    }
+
+    load()
+  }
+}
+
+function nameMap(n) { return n === 'tags' ? '标签' : n === 'categories' ? '类目' : '平台' }
+
+window.__render_tags = mgmtPage('tags', __api.getTags, __api.createTag, __api.updateTag, __api.deleteTag)
+window.__render_categories = mgmtPage('categories', __api.getCategories, __api.createCategory, __api.updateCategory, __api.deleteCategory)
+window.__render_platforms = mgmtPage('platforms', __api.getPlatforms, __api.createPlatform, __api.updatePlatform, __api.deletePlatform)
+
+
+// ===== init =====
+try {
+  __router.init()
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js")
+} catch(e) {}
+</script>
+</body>
+</html>

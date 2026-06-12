@@ -1,0 +1,21 @@
+<view class="mgr-page">
+  <view class="add-row card">
+    <input class="add-input" placeholder="新建交易类别" placeholder-style="color:#B5B3B0" value="{{newName}}" bindinput="onInput" />
+    <button class="btn-primary add-btn" bindtap="addItem" disabled="{{!newName}}">添加</button>
+  </view>
+
+  <view wx:if="{{list.length === 0}}" class="empty-state">
+    <text class="empty-icon">📂</text><text class="empty-text">暂无交易类别</text>
+  </view>
+
+  <view wx:for="{{list}}" wx:key="id" class="card mgr-row">
+    <view wx:if="{{editingId !== item.id}}">
+      <text class="mgr-name">{{item.name}}</text>
+    </view>
+    <input wx:else class="mgr-edit" value="{{editName}}" bindinput="onEditInput" bindblur="saveEdit" focus="{{true}}" />
+    <view class="mgr-actions">
+      <text bindtap="startEdit" data-id="{{item.id}}" data-name="{{item.name}}">编辑</text>
+      <text class="action-del" bindtap="deleteItem" data-id="{{item.id}}" data-name="{{item.name}}">删除</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,22 @@
+<view class="tags-page">
+  <view class="add-row card">
+    <input class="add-input" placeholder="新建其他标签" placeholder-style="color:#B5B3B0" value="{{newName}}" bindinput="onInput" />
+    <button class="btn-primary add-btn" bindtap="addItem" disabled="{{!newName}}">添加</button>
+  </view>
+
+  <view wx:if="{{tags.length === 0}}" class="empty-state">
+    <text class="empty-icon">🏷️</text>
+    <text class="empty-text">暂无其他标签</text>
+  </view>
+
+  <view wx:for="{{tags}}" wx:key="id" class="tag-row card">
+    <view wx:if="{{editingId !== item.id}}">
+      <text class="tag-name">{{item.name}}</text>
+    </view>
+    <input wx:else class="tag-edit-input" value="{{editName}}" bindinput="onEditInput" bindblur="saveEdit" focus="{{true}}" />
+    <view class="tag-row-actions">
+      <text bindtap="startEdit" data-id="{{item.id}}" data-name="{{item.name}}">编辑</text>
+      <text class="action-del" bindtap="deleteItem" data-id="{{item.id}}" data-name="{{item.name}}">删除</text>
+    </view>
+  </view>
+</view>

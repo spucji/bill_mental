@@ -1,0 +1,22 @@
+# 构建产物 + 模型 + 日志
+bill
+*.db
+*.log
+/models/
+.venv/
+*.exe
+*.bak
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+.MD_Store
+Thumbs.db
+
+# 环境变量（含敏感信息）
+.env

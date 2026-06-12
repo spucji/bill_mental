@@ -1,0 +1,39 @@
+<wxs module="utils" src="./date-picker.wxs" />
+
+<!-- 折叠状态：仅显示日期范围摘要 -->
+<view class="cal-collapsed" wx:if="{{!expanded}}" bindtap="toggle">
+  <text class="cal-summary">{{startDate || '选择日期'}}</text>
+  <text wx:if="{{startDate && endDate}}" class="cal-summary-arrow"> → </text>
+  <text wx:if="{{endDate}}" class="cal-summary">{{endDate}}</text>
+  <text class="cal-expand-icon">▾</text>
+</view>
+
+<!-- 展开状态：完整月历 -->
+<view class="cal" wx:else>
+  <view class="cal-head">
+    <view class="cal-arrow" bindtap="prevMonth">‹</view>
+    <view class="cal-title">{{year}}年{{month}}月</view>
+    <view class="cal-arrow" bindtap="nextMonth">›</view>
+  </view>
+
+  <view class="cal-weekdays">
+    <text wx:for="{{weekdays}}" wx:key="*this" class="cal-wd {{item === '六' || item === '日' ? 'cal-wd-wk' : ''}}">{{item}}</text>
+  </view>
+
+  <view class="cal-grid">
+    <view wx:for="{{blanks}}" wx:key="*this" class="cal-cell cal-cell-blank"></view>
+    <view
+      wx:for="{{days}}"
+      wx:key="*this"
+      class="cal-cell {{item === today ? 'cal-today' : ''}} {{item === startDate ? 'cal-start' : ''}} {{item === endDate ? 'cal-end' : ''}} {{item > startDate && item < endDate && startDate && endDate ? 'cal-range' : ''}}"
+      bindtap="tapDay"
+      data-day="{{item}}"
+    >
+      <text class="cal-day-num">{{utils.dayNum(item)}}</text>
+    </view>
+  </view>
+
+  <view class="cal-foot" bindtap="toggle">
+    <text class="cal-fold">收起 ▴</text>
+  </view>
+</view>

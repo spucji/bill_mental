@@ -1,0 +1,77 @@
+<view class="stats-page">
+  <view class="ambient-orb orb-stats"></view>
+
+  <!-- 筛选矩阵：仅两行 -->
+  <view class="filter-matrix card">
+    <date-picker
+      start-date="{{filters.startDate}}"
+      end-date="{{filters.endDate}}"
+      bind:change="onCalendarChange"
+    />
+
+    <view class="filter-row">
+      <view class="filter-chip {{filters.type === 'all' ? 'chip-active' : ''}}" bindtap="setType" data-type="all">全部</view>
+      <view class="filter-chip {{filters.type === 'income' ? 'chip-active' : ''}}" bindtap="setType" data-type="income">收入</view>
+      <view class="filter-chip {{filters.type === 'expense' ? 'chip-active' : ''}}" bindtap="setType" data-type="expense">支出</view>
+    </view>
+
+    <view class="filter-row">
+      <view class="filter-chip {{filters.dim === 'time' ? 'chip-active' : ''}}" bindtap="setDim" data-dim="time">变化趋势</view>
+      <view class="filter-chip {{filters.dim === 'category' ? 'chip-active' : ''}}" bindtap="setDim" data-dim="category">交易类别</view>
+      <view class="filter-chip {{filters.dim === 'platform' ? 'chip-active' : ''}}" bindtap="setDim" data-dim="platform">交易平台</view>
+      <view class="filter-chip {{filters.dim === 'tag' ? 'chip-active' : ''}}" bindtap="setDim" data-dim="tag">其他标签</view>
+    </view>
+
+    <view class="filter-row" wx:if="{{filters.dim === 'time'}}">
+      <text class="filter-label">粒度</text>
+      <view class="filter-chip {{filters.agg === 'auto' ? 'chip-active' : ''}}" bindtap="setAgg" data-agg="auto">自动</view>
+      <view class="filter-chip {{filters.agg === 'day' ? 'chip-active' : ''}}" bindtap="setAgg" data-agg="day">日</view>
+      <view class="filter-chip {{filters.agg === 'week' ? 'chip-active' : ''}}" bindtap="setAgg" data-agg="week">周</view>
+      <view class="filter-chip {{filters.agg === 'month' ? 'chip-active' : ''}}" bindtap="setAgg" data-agg="month">月</view>
+      <view class="filter-chip {{filters.agg === 'year' ? 'chip-active' : ''}}" bindtap="setAgg" data-agg="year">年</view>
+    </view>
+  </view>
+
+  <!-- 汇总 -->
+  <view class="summary-card card ambient-glow">
+    <view class="summary-row">
+      <view class="summary-item">
+        <text class="summary-label">收入</text>
+        <text class="summary-value income">{{summary.total_income}}</text>
+      </view>
+      <view class="summary-divider"></view>
+      <view class="summary-item">
+        <text class="summary-label">支出</text>
+        <text class="summary-value expense">{{summary.total_expense}}</text>
+      </view>
+      <view class="summary-divider"></view>
+      <view class="summary-item">
+        <text class="summary-label">净利润</text>
+        <text class="summary-value">{{summary.net_amount}}</text>
+      </view>
+    </view>
+    <view class="summary-ratio" wx:if="{{ratioText}}">
+      <text class="ratio-text">{{ratioText}}</text>
+    </view>
+  </view>
+
+  <!-- 图表 -->
+  <view class="chart-card card">
+    <chart-canvas wx:if="{{chartOption}}" option="{{chartOption}}"></chart-canvas>
+    <view wx:else class="chart-empty">暂无图表数据</view>
+  </view>
+
+  <!-- 明细列表 -->
+  <view class="card" wx:if="{{displayList && displayList.length > 0}}">
+    <view class="section-title">{{displayTitle}}</view>
+    <view wx:for="{{displayList}}" wx:key="name" class="tag-row">
+      <view class="tag-bar-bg">
+        <view class="tag-bar-fill" style="width: {{item._pct}}%"></view>
+      </view>
+      <view class="tag-row-info">
+        <text class="tag-row-name">{{item.name}}</text>
+        <text class="tag-row-amount">{{item.amount}}</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,22 @@
+[Unit]
+Description=轻记账 API 服务
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/bill
+EnvironmentFile=/opt/bill/.env
+ExecStart=/opt/bill/bill
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bill
+
+[Install]
+WantedBy=multi-user.target

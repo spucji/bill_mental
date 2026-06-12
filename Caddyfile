@@ -1,0 +1,11 @@
+:80 {
+	root * /Users/tom/data/code/go/bill/web
+
+	header / Content-Type text/html
+	header / Cache-Control "no-store, must-revalidate"
+
+	handle /api/* {
+		reverse_proxy localhost:8080
+	}
+	file_server
+}

@@ -1,0 +1,92 @@
+/* ===== 配色 Token ===== */
+page {
+  --bg-oat: #F4F3F0;
+  --text-primary: #4A4946;
+  --text-secondary: #8B8986;
+  --text-muted: #B5B3B0;
+  --card-bg: rgba(255, 255, 255, 0.62);
+  --card-border: rgba(255, 255, 255, 0.5);
+  --income: #5B8C5A;
+  --expense: #C95C4F;
+  --accent: #6B8FA3;
+  --shadow-sm: 0 2rpx 16rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 8rpx 40rpx rgba(0,0,0,0.06);
+
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background: var(--bg-oat);
+}
+
+/* ===== 全局磨砂卡片 ===== */
+.card {
+  background: var(--card-bg);
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 16rpx;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== 全局按钮 ===== */
+.btn-primary {
+  background: var(--text-primary);
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1rpx solid var(--text-muted);
+  border-radius: 16rpx;
+  font-size: 26rpx;
+}
+
+/* ===== 晕染光斑 ===== */
+.ambient-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.ambient-glow::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -30%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(ellipse, rgba(180,190,200,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== 辅助 ===== */
+.income { color: var(--income); }
+.expense { color: var(--expense); }
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 24rpx;
+  color: var(--text-muted);
+  letter-spacing: 2rpx;
+  margin-bottom: 16rpx;
+  text-transform: uppercase;
+}

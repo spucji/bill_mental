@@ -1,0 +1,102 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-oat);
+  position: relative;
+  overflow: hidden;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120rpx);
+  opacity: 0.12;
+  pointer-events: none;
+}
+.orb-1 { width: 500rpx; height: 500rpx; background: #A8BFCC; top: -120rpx; right: -100rpx; }
+.orb-2 { width: 400rpx; height: 400rpx; background: #C5B9A8; bottom: -80rpx; left: -80rpx; }
+
+.login-card {
+  width: 600rpx;
+  padding: 64rpx 48rpx;
+  text-align: center;
+  z-index: 1;
+}
+
+.brand { margin-bottom: 48rpx; }
+.brand-icon { font-size: 72rpx; display: block; margin-bottom: 16rpx; }
+.brand-name { font-size: 44rpx; font-weight: 700; color: var(--text-primary); letter-spacing: 4rpx; }
+.brand-desc { display: block; font-size: 24rpx; color: var(--text-muted); margin-top: 10rpx; }
+
+/* ---- 服务器地址 ---- */
+.server-section { margin-top: 28rpx; }
+
+.server-row {
+  display: flex;
+  align-items: center;
+}
+
+.server-cached {
+  padding: 18rpx 24rpx;
+  background: rgba(0,0,0,0.03);
+  border-radius: 14rpx;
+  font-size: 24rpx;
+}
+
+.server-label { color: var(--text-muted); margin-right: 12rpx; }
+.server-val {
+  flex: 1;
+  color: var(--text-primary);
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.server-edit {
+  color: #8C8A86;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-left: 2rpx solid rgba(0,0,0,0.08);
+  margin-left: 12rpx;
+}
+
+.server-input {
+  margin-bottom: 0;
+}
+
+/* ---- 输入 ---- */
+.login-input {
+  width: 100%;
+  height: 88rpx;
+  box-sizing: border-box;
+  background: rgba(0,0,0,0.03);
+  border-radius: 14rpx;
+  padding: 0 24rpx;
+  font-size: 32rpx;
+  color: var(--text-primary);
+  margin-bottom: 36rpx;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 22rpx 0;
+  letter-spacing: 6rpx;
+}
+
+.login-btn[disabled] {
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.pwd-row { display: flex; align-items: center; margin-bottom: 36rpx; }
+.pwd-check { width: 32rpx; height: 32rpx; border: 2rpx solid var(--text-muted); border-radius: 6rpx; margin-right: 12rpx; font-size: 20rpx; color: #fff; display: flex; align-items: center; justify-content: center; }
+.pwd-check.checked { background: var(--text-primary); border-color: var(--text-primary); }
+.pwd-label { font-size: 26rpx; color: var(--text-muted); }
+
+.login-hint {
+  margin-top: 28rpx;
+  font-size: 22rpx;
+  color: var(--text-muted);
+}

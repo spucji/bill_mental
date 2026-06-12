@@ -1,0 +1,59 @@
+<view class="login-page">
+  <view class="ambient-orb orb-1"></view>
+  <view class="ambient-orb orb-2"></view>
+
+  <view class="login-card card ambient-glow">
+    <view class="brand">
+      <text class="brand-icon">🌿</text>
+      <text class="brand-name">轻记账</text>
+      <text class="brand-desc">极简 · 私人 · 专注</text>
+    </view>
+
+    <input
+      class="login-input"
+      placeholder="输入账号"
+      placeholder-style="color:#B5B3B0"
+      value="{{account}}"
+      bindinput="onInput"
+    />
+
+    <input
+      class="login-input"
+      placeholder="输入密码"
+      placeholder-style="color:#B5B3B0"
+      password="{{!showPassword}}"
+      value="{{password}}"
+      bindinput="onPasswordInput"
+    />
+
+    <view class="pwd-row" bindtap="togglePassword">
+      <view class="pwd-check {{showPassword ? 'checked' : ''}}">{{showPassword ? '✓' : ''}}</view>
+      <text class="pwd-label">显示密码</text>
+    </view>
+
+    <button class="btn-primary login-btn" bindtap="doLogin" disabled="{{!account}}">
+      进入
+    </button>
+
+    <view class="login-hint">账号由管理员创建，请联系开通</view>
+
+    <view class="server-section">
+      <view wx:if="{{showServerInput}}" class="server-row">
+        <input
+          class="login-input server-input"
+          type="text"
+          placeholder="http://服务器IP:端口"
+          placeholder-style="color:#B5B3B0"
+          value="{{baseURL}}"
+          bindinput="onServerInput"
+          focus="{{showServerInput}}"
+        />
+      </view>
+      <view wx:else class="server-row server-cached">
+        <text class="server-label">服务器</text>
+        <text class="server-val">{{baseURL}}</text>
+        <text class="server-edit" bindtap="toggleServer">修改</text>
+      </view>
+    </view>
+  </view>
+</view>

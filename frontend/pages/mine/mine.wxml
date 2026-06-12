@@ -1,0 +1,48 @@
+<view class="mine-page">
+  <view class="ambient-orb orb-mine"></view>
+
+  <view class="card ambient-glow profile-card">
+    <view class="avatar">🌿</view>
+    <text class="account-name">{{account}}</text>
+    <text class="account-desc">轻记账用户</text>
+  </view>
+
+  <view class="card menu-card" bindtap="goCategories">
+    <view class="menu-item">
+      <text>交易类别</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="card menu-card" bindtap="goPlatforms">
+    <view class="menu-item">
+      <text>交易平台</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="card menu-card" bindtap="goTags">
+    <view class="menu-item">
+      <text>其他标签</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="card menu-card" bindtap="goChangePassword">
+    <view class="menu-item">
+      <text>修改密码</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="card menu-card">
+    <view class="menu-item" bindtap="goServerSettings">
+      <text>服务器设置</text>
+      <text class="menu-val">{{serverInfo}}</text>
+    </view>
+  </view>
+
+  <view class="logout-btn card" bindtap="doLogout">
+    <text class="logout-text">退出登录</text>
+  </view>
+</view>

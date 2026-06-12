@@ -1,0 +1,25 @@
+name: Package
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create zip archive
+        run: |
+          git archive --format=zip --output=bill.zip HEAD
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bill-source
+          path: bill.zip

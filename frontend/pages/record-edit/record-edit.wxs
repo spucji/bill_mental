@@ -1,0 +1,9 @@
+module.exports = {
+  isTagSelected: function (selected, id) {
+    if (!selected || !selected.length) return false
+    for (var i = 0; i < selected.length; i++) {
+      if (selected[i] === id) return true
+    }
+    return false
+  }
+}

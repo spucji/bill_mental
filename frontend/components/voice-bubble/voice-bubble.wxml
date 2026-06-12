@@ -1,0 +1,6 @@
+<view class="voice-fab {{recording ? 'recording' : ''}}" bindtouchstart="startRecord" bindtouchend="stopRecord">
+  <view class="voice-ripple" wx:if="{{recording}}"></view>
+  <text class="voice-icon">{{recording ? '◉' : '♪'}}</text>
+  <text wx:if="{{!recording}}" class="voice-label">语音</text>
+  <text wx:else class="voice-label">松开</text>
+</view>

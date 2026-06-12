@@ -1,0 +1,7 @@
+module.exports = {
+  dayNum: function (d) {
+    if (!d) return ''
+    var parts = d.split('-')
+    return parseInt(parts[2], 10)
+  }
+}

@@ -1,0 +1,13 @@
+.mgr-page { min-height: 100vh; background: var(--bg-oat); padding: 24rpx; }
+.add-row { display: flex; gap: 16rpx; align-items: center; margin-bottom: 20rpx; }
+.add-input { flex: 1; font-size: 28rpx; color: var(--text-primary); }
+.add-btn { width: 120rpx; padding: 16rpx 0; font-size: 26rpx; }
+.add-btn[disabled] { opacity: 0.4; }
+.empty-state { text-align: center; padding: 120rpx 0; }
+.empty-icon { font-size: 72rpx; display: block; margin-bottom: 16rpx; }
+.empty-text { font-size: 28rpx; color: var(--text-muted); }
+.mgr-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; padding: 24rpx 28rpx; }
+.mgr-name { font-size: 30rpx; color: var(--text-primary); }
+.mgr-edit { flex: 1; border-bottom: 2rpx solid var(--text-primary); font-size: 28rpx; padding: 4rpx 0; }
+.mgr-actions { display: flex; gap: 24rpx; font-size: 24rpx; color: var(--text-secondary); }
+.action-del { color: var(--expense); }

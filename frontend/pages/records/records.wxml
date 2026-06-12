@@ -1,0 +1,64 @@
+<view class="index-page">
+  <!-- 晕染光斑 -->
+  <view class="ambient-orb orb-top"></view>
+
+  <!-- 月历日期选择 -->
+  <date-picker
+    start-date="{{startDate}}"
+    end-date="{{endDate}}"
+    bind:change="onCalendarChange"
+  />
+
+  <!-- 记一笔按钮 -->
+  <view class="add-bar">
+    <view class="add-btn" bindtap="addRecord">记一笔</view>
+  </view>
+
+  <!-- 汇总卡片 -->
+  <view class="summary-card card ambient-glow">
+    <view class="summary-row">
+      <view class="summary-item">
+        <text class="summary-label">收入</text>
+        <text class="summary-value income">{{summary.income}}</text>
+      </view>
+      <view class="summary-divider"></view>
+      <view class="summary-item">
+        <text class="summary-label">支出</text>
+        <text class="summary-value expense">{{summary.expense}}</text>
+      </view>
+      <view class="summary-divider"></view>
+      <view class="summary-item">
+        <text class="summary-label">结余</text>
+        <text class="summary-value">{{summary.net}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <scroll-view scroll-y class="record-scroll" bindscrolltolower="loadMore" lower-threshold="120">
+    <view wx:if="{{records.length === 0}}" class="empty-state">
+      <text class="empty-icon">☁️</text>
+      <text class="empty-text">暂无记录</text>
+      <text class="empty-hint">点击「语音录入」快速记账</text>
+    </view>
+
+    <view wx:for="{{records}}" wx:key="id" class="record-item card" bindtap="editRecord" data-id="{{item.id}}">
+      <view class="record-left">
+        <view class="record-meta">
+          <text wx:if="{{item.category}}" class="meta-pill meta-cat">{{item.category.name}}</text>
+          <text wx:if="{{item.platform}}" class="meta-pill meta-plat">{{item.platform.name}}</text>
+          <text wx:for="{{item.tags}}" wx:key="id" wx:for-item="t" class="tag-pill">{{t.name}}</text>
+          <text wx:if="{{!item.category && !item.platform && item.tags.length === 0}}" class="tag-pill tag-empty">未标记</text>
+        </view>
+        <view class="record-date">{{item._dateStr}} · {{item.note || '无备注'}}</view>
+      </view>
+      <view class="record-right {{item.type === 'income' ? 'income' : 'expense'}}">
+        <text>{{item._sign}}{{item._amountStr}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{noMore && records.length > 0}}" class="list-end">— 全部加载 —</view>
+  </scroll-view>
+
+  <voice-bubble bind:voicedone="onVoiceDone" />
+</view>
