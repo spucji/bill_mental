@@ -26,6 +26,9 @@ func Init(dbPath string) {
 		&models.Category{},
 		&models.Platform{},
 		&models.Record{},
+		&models.MentalProfile{},
+		&models.MentalChatRecord{},
+		&models.MentalMoodData{},
 	)
 	if err != nil {
 		log.Fatalf("数据库迁移失败: %v", err)

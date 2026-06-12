@@ -43,9 +43,9 @@ func setupLogging(cfg *config.Config) {
 
 	log.SetOutput(io.MultiWriter(os.Stderr, &lumberjack.Logger{
 		Filename:   cfg.LogPath,
-		MaxSize:    10,  // MB
-		MaxBackups: 7,   // 保留 7 个备份
-		MaxAge:     30,  // 天
+		MaxSize:    10, // MB
+		MaxBackups: 7,  // 保留 7 个备份
+		MaxAge:     30, // 天
 		Compress:   true,
 	}))
 }
@@ -115,6 +115,16 @@ func runServer(cfg *config.Config) {
 
 	voiceH := handlers.NewVoiceHandler(cfg)
 	auth.POST("/records/voice", voiceH.ParseVoice)
+
+	mentalH := handlers.NewMentalHandler(cfg)
+	mental := auth.Group("/mental")
+	mental.GET("/profile", mentalH.GetProfile)
+	mental.POST("/profile", mentalH.UpdateProfile)
+	mental.POST("/analyze", mentalH.Analyze)
+	mental.GET("/history", mentalH.History)
+	mental.GET("/weekly-report", mentalH.WeeklyReport)
+	mental.GET("/statistics", mentalH.Statistics)
+	mental.GET("/sounds/:filename", mentalH.Sound)
 
 	addr := ":" + cfg.ServerPort
 
