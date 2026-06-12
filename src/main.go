@@ -76,6 +76,7 @@ func runServer(cfg *config.Config) {
 	adminH := handlers.NewAdminHandler()
 	adminGroup.GET("/users", adminH.ListUsers)
 	adminGroup.POST("/users", adminH.CreateUser)
+	adminGroup.PUT("/users/:id/password", adminH.ResetPassword)
 	adminGroup.DELETE("/users/:id", adminH.DeleteUser)
 
 	// 用户 API

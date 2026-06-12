@@ -64,8 +64,26 @@ func (h *AdminHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 	database.DB.Where("user_id = ?", user.ID).Delete(&models.Record{})
+	database.DB.Where("user_id = ?", user.ID).Delete(&models.Tag{})
+	database.DB.Where("user_id = ?", user.ID).Delete(&models.Category{})
+	database.DB.Where("user_id = ?", user.ID).Delete(&models.Platform{})
+	database.DB.Where("user_id = ?", user.ID).Delete(&models.MentalProfile{})
+	database.DB.Where("user_id = ?", user.ID).Delete(&models.MentalChatRecord{})
+	database.DB.Where("user_id = ?", user.ID).Delete(&models.MentalMoodData{})
 	database.DB.Delete(&user)
 	c.JSON(http.StatusOK, gin.H{"code": 0, "message": "删除成功"})
+}
+
+func (h *AdminHandler) ResetPassword(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
+	var user models.User
+	if err := database.DB.First(&user, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "message": "用户不存在"})
+		return
+	}
+	user.Password = HashPassword(defaultPassword)
+	database.DB.Save(&user)
+	c.JSON(http.StatusOK, gin.H{"code": 0, "message": "已重置为 1234"})
 }
 
 // ChangePassword 用户修改密码（需登录）

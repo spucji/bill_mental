@@ -1,0 +1,126 @@
+.admin-page {
+  min-height: 100vh;
+  padding: 28rpx;
+  box-sizing: border-box;
+  background: #f4f3f0;
+}
+
+.key-card,
+.create-card,
+.user-card {
+  border-radius: 24rpx;
+}
+
+.key-input,
+.account-input {
+  margin-top: 18rpx;
+  height: 88rpx;
+  padding: 0 22rpx;
+  border-radius: 16rpx;
+  background: rgba(255,255,255,0.86);
+  color: #4a4946;
+  font-size: 28rpx;
+}
+
+.key-actions,
+.create-row,
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.key-actions {
+  margin-top: 18rpx;
+  justify-content: flex-end;
+}
+
+.small-btn,
+.create-btn,
+.refresh-btn,
+.action-btn {
+  margin: 0;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 14rpx;
+  font-size: 24rpx;
+  background: #fff;
+  color: #68645f;
+}
+
+.primary,
+.create-btn {
+  background: #4a4946;
+  color: #fff;
+}
+
+.create-row {
+  margin-top: 18rpx;
+}
+
+.account-input {
+  flex: 1;
+  margin-top: 0;
+}
+
+.create-btn {
+  width: 148rpx;
+}
+
+.hint {
+  display: block;
+  margin-top: 14rpx;
+  color: #8b8986;
+  font-size: 24rpx;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 30rpx 2rpx 16rpx;
+}
+
+.count {
+  color: #8b8986;
+  font-size: 25rpx;
+}
+
+.refresh-btn {
+  width: 120rpx;
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.user-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.user-account {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #4a4946;
+}
+
+.user-meta {
+  color: #b5b3b0;
+  font-size: 24rpx;
+}
+
+.user-actions {
+  justify-content: flex-end;
+}
+
+.action-btn {
+  min-width: 156rpx;
+}
+
+.danger {
+  color: #c95c4f;
+}

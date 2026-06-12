@@ -15,6 +15,7 @@ Page({
   goPlatforms() { wx.navigateTo({ url: '/pages/platforms/platforms' }) },
   goChangePassword() { wx.navigateTo({ url: '/pages/change-password/change-password' }) },
   goSpaceSelect() { wx.navigateTo({ url: '/pages/space-select/space-select' }) },
+  goAdminUsers() { wx.navigateTo({ url: '/pages/admin-users/admin-users' }) },
 
   goServerSettings() {
     var self = this

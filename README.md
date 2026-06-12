@@ -111,6 +111,22 @@ bill admin delete-user <账号|ID>           # 删除用户（含所有记录）
 bill backup <本地文件> <S3路径>            # 上传备份到 S3
 ```
 
+## 自动备份
+
+生产环境建议至少备份 `/opt/bill_mental/bill.db` 和 `/opt/bill_mental/.env`。
+如已在 `.env` 中配置 `S3_ENDPOINT`、`S3_BUCKET`、`S3_ACCESS_KEY`、`S3_SECRET_KEY`，可安装每日 03:00 自动备份：
+
+```bash
+cd /opt/bill_mental
+bash deploy/cron/install-backup-cron.sh
+```
+
+备份采用 7 天轮换：
+
+```text
+backups/bill-1.db ... backups/bill-7.db
+```
+
 ## API 概览
 
 | 端点 | 方法 | 说明 |

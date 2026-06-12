@@ -1,0 +1,35 @@
+<view class="admin-page">
+  <view class="card key-card">
+    <text class="section-title">管理员密钥</text>
+    <input class="key-input" password="{{!showKey}}" placeholder="填写服务器 .env 里的 ADMIN_KEY" value="{{adminKey}}" bindinput="onKeyInput" />
+    <view class="key-actions">
+      <button class="small-btn" bindtap="toggleKey">{{showKey ? '隐藏' : '显示'}}</button>
+      <button class="small-btn primary" bindtap="saveKey">保存</button>
+    </view>
+  </view>
+
+  <view class="card create-card">
+    <text class="section-title">新增白名单账号</text>
+    <view class="create-row">
+      <input class="account-input" placeholder="输入账号" value="{{newAccount}}" bindinput="onAccountInput" />
+      <button class="create-btn" bindtap="createUser">创建</button>
+    </view>
+    <text class="hint">新账号初始密码为 1234</text>
+  </view>
+
+  <view class="toolbar">
+    <text class="count">共 {{users.length}} 个用户</text>
+    <button class="refresh-btn" bindtap="loadUsers">刷新</button>
+  </view>
+
+  <view wx:for="{{users}}" wx:key="id" class="user-card card">
+    <view class="user-main">
+      <text class="user-account">{{item.account}}</text>
+      <text class="user-meta">ID {{item.id}}</text>
+    </view>
+    <view class="user-actions">
+      <button class="action-btn" data-id="{{item.id}}" data-account="{{item.account}}" bindtap="resetPassword">重置密码</button>
+      <button class="action-btn danger" data-id="{{item.id}}" data-account="{{item.account}}" bindtap="deleteUser">删除</button>
+    </view>
+  </view>
+</view>

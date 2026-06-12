@@ -1,13 +1,14 @@
 #!/bin/bash
 # =====================================================
 # 每日备份 SQLite → S3（循环覆盖 7 天）
-# crontab: 0 3 * * * /opt/bill/deploy/cron/backup.sh
+# crontab: 0 3 * * * /opt/bill_mental/deploy/cron/backup.sh
 # =====================================================
 set -e
-cd /opt/bill
+APP_DIR="${APP_DIR:-/opt/bill_mental}"
+cd "${APP_DIR}"
 source .env 2>/dev/null || true
 
-DB="${DB_PATH:-/opt/bill/bill.db}"
+DB="${DB_PATH:-${APP_DIR}/bill.db}"
 SLOT=$(( $(date +%u) ))
 TMP="/tmp/bill-backup-${SLOT}.db"
 KEY="backups/bill-${SLOT}.db"
