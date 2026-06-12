@@ -53,19 +53,32 @@ App({
       responseType: options.responseType,
       header: header,
       success(res) {
+        const body = res.data || {}
         if (res.statusCode === 401) {
           wx.showToast({ title: '登录已过期', icon: 'none' })
           setTimeout(function () { wx.reLaunch({ url: '/pages/login/login' }) }, 1200)
-          if (options.fail) options.fail(res)
+          if (options.fail) options.fail(new Error((body && body.message) || '登录已过期'))
           return
         }
 
-        if (res.data && res.data.code === 0) {
-          res.data = res.data.data
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          if (options.fail) options.fail(new Error((body && body.message) || ('请求失败: ' + res.statusCode)))
+          return
+        }
+
+        if (body && body.code !== undefined && body.code !== 0) {
+          if (options.fail) options.fail(new Error(body.message || '请求失败'))
+          return
+        }
+
+        if (body && body.code === 0) {
+          res.data = body.data
         }
         if (options.success) options.success(res)
       },
-      fail: options.fail,
+      fail(err) {
+        if (options.fail) options.fail(new Error(err.errMsg || '网络请求失败'))
+      },
       complete: options.complete
     })
   },

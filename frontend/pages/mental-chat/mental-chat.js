@@ -136,8 +136,12 @@ Page({
           this.triggerSmartIntervention(this.data.currentTheme, lastInput);
         }
       },
-      fail: () => {
-        wx.showToast({ title: '对话发送失败', icon: 'none' });
+      fail: (err) => {
+        wx.showModal({
+          title: '对话发送失败',
+          content: err && err.message ? err.message : '请检查服务器地址、HTTPS 域名和 AI_API_KEY',
+          showCancel: false
+        });
       },
       complete: () => {
         this.setData({ loading: false });
