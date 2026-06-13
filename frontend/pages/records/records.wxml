@@ -2,6 +2,10 @@
   <!-- 晕染光斑 -->
   <view class="ambient-orb orb-top"></view>
 
+  <view class="space-switch-row">
+    <view class="space-switch-btn" bindtap="goSpaceSelect">空间切换</view>
+  </view>
+
   <!-- 月历日期选择 -->
   <date-picker
     start-date="{{startDate}}"

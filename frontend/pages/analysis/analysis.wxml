@@ -1,6 +1,10 @@
 <view class="stats-page">
   <view class="ambient-orb orb-stats"></view>
 
+  <view class="space-switch-row">
+    <view class="space-switch-btn" bindtap="goSpaceSelect">空间切换</view>
+  </view>
+
   <!-- 筛选矩阵：仅两行 -->
   <view class="filter-matrix card">
     <date-picker

@@ -1,4 +1,7 @@
 <view class="page-root theme-{{currentTheme}}">
+  <view class="space-switch-row">
+    <view class="space-switch-btn" bindtap="goSpaceSelect">空间切换</view>
+  </view>
   
   <view class="welcome-header">
     <text class="greeting">{{greetingText}}</text>

@@ -64,6 +64,7 @@ Page({
   },
 
   loadMore() { this.setData({ noMore: true }) },
+  goSpaceSelect() { wx.navigateTo({ url: '/pages/space-select/space-select' }) },
   addRecord() { wx.navigateTo({ url: '/pages/record-edit/record-edit' }) },
   editRecord(e) { wx.navigateTo({ url: '/pages/record-edit/record-edit?id=' + e.currentTarget.dataset.id }) },
 

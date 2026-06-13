@@ -1,6 +1,10 @@
 <view class="mine-page">
   <view class="ambient-orb orb-mine"></view>
 
+  <view class="space-switch-row">
+    <view class="space-switch-btn" bindtap="goSpaceSelect">空间切换</view>
+  </view>
+
   <view class="card ambient-glow profile-card">
     <view class="avatar">🌿</view>
     <text class="account-name">{{account}}</text>

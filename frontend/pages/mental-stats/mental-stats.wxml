@@ -1,4 +1,8 @@
 <view class="page-root theme-{{currentTheme}}">
+  <view class="space-switch-row">
+    <view class="space-switch-btn" bindtap="goSpaceSelect">空间切换</view>
+  </view>
+
   <view class="welcome-header">
     <text class="greeting">心灵奇旅</text>
     <text class="sub-greeting">记录每一刻的悸动，见证每一步的成长</text>

@@ -1,4 +1,8 @@
 <view class="home-container">
+  <view class="space-switch-row">
+    <view class="space-switch-btn" bindtap="goSpaceSelect">空间切换</view>
+  </view>
+
   <view class="welcome-section">
     <block wx:if="{{isLoading}}">
       <view class="loading-pulse"></view>

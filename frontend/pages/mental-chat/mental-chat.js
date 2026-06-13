@@ -80,6 +80,10 @@ Page({
     });
   },
 
+  goSpaceSelect() {
+    wx.navigateTo({ url: '/pages/space-select/space-select' });
+  },
+
   switchTheme(e) {
     const theme = (typeof e === 'string') ? e : e.currentTarget.dataset.theme;
     const config = this.data.themeConfigs[theme];

@@ -102,5 +102,9 @@ Page({
   // 支持下拉刷新
   onPullDownRefresh() {
     this.fetchHistory();
+  },
+
+  goSpaceSelect() {
+    wx.navigateTo({ url: '/pages/space-select/space-select' });
   }
 });

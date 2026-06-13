@@ -26,6 +26,8 @@ Page({
     this.loadAll()
   },
 
+  goSpaceSelect() { wx.navigateTo({ url: '/pages/space-select/space-select' }) },
+
   onCalendarChange(e) {
     var start = e.detail.startDate, end = e.detail.endDate
     this.setFilter('startDate', start)

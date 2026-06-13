@@ -41,6 +41,10 @@ Page({
 
   onRangeChange(e) { this.setData({ rangeIndex: e.detail.value }); },
 
+  goSpaceSelect() {
+    wx.navigateTo({ url: '/pages/space-select/space-select' });
+  },
+
   // 生成分主题综合周报
   fetchWeeklyReport() {
     const app = getApp();

@@ -93,6 +93,10 @@ Page({
     wx.navigateTo({ url: '/pages/mental-chat/mental-chat' });
   },
 
+  goSpaceSelect() {
+    wx.navigateTo({ url: '/pages/space-select/space-select' });
+  },
+
   goToTool(e) {
     const url = e.currentTarget.dataset.url;
     wx.navigateTo({ url: url });

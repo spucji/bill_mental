@@ -104,6 +104,11 @@ Page({
     this.setData({ isPlaying: false, currentNoise: '' });
   },
 
+  goSpaceSelect() {
+    this.stopNoise();
+    wx.navigateTo({ url: '/pages/space-select/space-select' });
+  },
+
   onUnload() {
     if (this.audioCtx) this.audioCtx.destroy();
   }
